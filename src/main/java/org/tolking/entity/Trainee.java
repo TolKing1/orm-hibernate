@@ -21,9 +21,9 @@ public class Trainee{
 
     private String address;
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private User user;
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Training> trainingList;
 }

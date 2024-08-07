@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Entity
 @Data
@@ -20,14 +17,6 @@ public class Trainer{
     @JoinColumn(name = "training_type_id")
     private TrainingType trainingType;
 
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private User user;
-
-    @ManyToMany
-    @JoinTable(
-        name = "trainer_trainee_m2m",
-            joinColumns = @JoinColumn,
-            inverseJoinColumns = @JoinColumn(name = "trainee_id")
-    )
-    private List<Trainee> traineeList = new ArrayList<>();
 }

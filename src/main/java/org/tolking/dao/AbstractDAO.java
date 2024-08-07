@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 @Log
-public abstract class CR<T> implements QueryHelper<T> {
+public abstract class AbstractDAO<T> implements QueryHelper<T> {
     protected final SessionFactory sessionFactory;
 
     public void create(T entity) {
@@ -26,12 +26,13 @@ public abstract class CR<T> implements QueryHelper<T> {
        }));
     }
 
-    public  Optional<T> readByParam(String param, Object value, Class<T> entityClass) {
+    protected Optional<T> readByParam(String param, Object value, Class<T> entityClass) {
         try (Session session = this.sessionFactory.openSession()) {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<T> cr = cb.createQuery(entityClass);
             Root<T> root = cr.from(entityClass);
 
+            //Select
             cr.select(root).where(cb.equal(root.get(param), value));
 
             Query<T> query = session.createQuery(cr);
@@ -43,7 +44,9 @@ public abstract class CR<T> implements QueryHelper<T> {
     @Override
     public void performSessionOperation(Consumer<Session> sessionConsumer) {
         Transaction tx = null;
-        try (Session session = sessionFactory.openSession()) {
+        Session session;
+        try {
+            session = sessionFactory.openSession();
             tx = session.beginTransaction();
 
             sessionConsumer.accept(session);
@@ -53,7 +56,7 @@ public abstract class CR<T> implements QueryHelper<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            log.warning("Transaction can't be performed: %s".formatted(ex.getMessage()));
+            log.severe("Transaction can't be performed: %s".formatted(ex.getMessage()));
         }
     }
 

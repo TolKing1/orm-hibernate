@@ -27,7 +27,6 @@ public class TypeLoader implements ApplicationListener<ContextRefreshedEvent> {
                 log.warning("Already exists: %s".formatted(stringValue));
             } catch (TrainingTypeNotFoundException e) {
                 trainingTypeService.create(stringValue);
-                log.info("Created type: %s".formatted(stringValue));
             }
         }
     }
