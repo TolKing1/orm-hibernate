@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tolking.dao.CR;
 import org.tolking.entity.TrainingType;
+import org.tolking.enums.TrainingsType;
 import org.tolking.exception.TrainingTypeNotFoundException;
 
 
@@ -17,12 +18,14 @@ public class TrainingTypeServiceImpl implements org.tolking.service.TrainingType
     public void create(String name){
         TrainingType trainingType = new TrainingType(name);
 
-        trainingTypeDao.save(trainingType);
+        trainingTypeDao.create(trainingType);
     }
 
     @Override
     public TrainingType findByName(String name) throws TrainingTypeNotFoundException {
-        return trainingTypeDao.getByEntityByParam(NAME_PARAM,name).orElseThrow(
+        TrainingsType type = TrainingsType.valueOf(name);
+
+        return trainingTypeDao.readByParam(NAME_PARAM, type, TrainingType.class).orElseThrow(
                 ()-> new TrainingTypeNotFoundException(name)
         );
     }

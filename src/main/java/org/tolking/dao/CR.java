@@ -2,6 +2,9 @@ package org.tolking.dao;
 
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.hibernate.Session;
@@ -17,12 +20,24 @@ import java.util.function.Consumer;
 public abstract class CR<T> implements QueryHelper<T> {
     protected final SessionFactory sessionFactory;
 
-    public abstract Optional<T> getByEntityByParam(String param, String value);
-
-    public void save(T entity) {
+    public void create(T entity) {
        this.performSessionOperation((session -> {
            session.persist(entity);
        }));
+    }
+
+    public  Optional<T> readByParam(String param, Object value, Class<T> entityClass) {
+        try (Session session = this.sessionFactory.openSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<T> cr = cb.createQuery(entityClass);
+            Root<T> root = cr.from(entityClass);
+
+            cr.select(root).where(cb.equal(root.get(param), value));
+
+            Query<T> query = session.createQuery(cr);
+
+            return getSingleTypeOptional(query);
+        }
     }
 
     @Override
