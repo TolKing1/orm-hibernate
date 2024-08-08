@@ -26,6 +26,16 @@ public abstract class AbstractUserDAO<T> extends AbstractDAO<T> {
             session.merge(entity);
         }));
     }
+    public String getUsername(String baseUsername){
+        int serialNumber = 1;
+        String username = baseUsername;
+
+        while (this.readByUserName(username).isPresent()) {
+            username = baseUsername + "_" + serialNumber++;
+        }
+
+        return username;
+    }
     public abstract Optional<T> getByUsernameAndPassword(String username, String password);
 
     public abstract Optional<T> readByUserName(String username);

@@ -10,8 +10,10 @@ import org.tolking.dto.converter.trainee.TraineeProfileConverter;
 import org.tolking.dto.trainee.TraineeDTO;
 import org.tolking.dto.trainee.TraineeProfileDTO;
 import org.tolking.entity.Trainee;
+import org.tolking.entity.User;
 import org.tolking.exception.UserNotFoundException;
 import org.tolking.service.TraineeService;
+import org.tolking.util.RandomString;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,12 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public void create(TraineeDTO dto) {
         Trainee trainee = createConverter.toEntity(dto);
-        trainee.getUser().setIsActive(true);
+        User traineeUser = trainee.getUser();
+        String serialUsername = traineeDAO.getUsername(traineeUser.getUsername());
+
+        traineeUser.setIsActive(true);
+        traineeUser.setUsername(serialUsername);
+        traineeUser.setPassword(RandomString.getAlphaNumericString(10));
 
         traineeDAO.create(trainee);
     }

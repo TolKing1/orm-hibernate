@@ -11,7 +11,9 @@ import org.tolking.dto.trainer.TrainerDTO;
 import org.tolking.dto.trainer.TrainerProfileDTO;
 import org.tolking.dto.trainer.TrainerUpdateDTO;
 import org.tolking.entity.Trainer;
+import org.tolking.entity.User;
 import org.tolking.exception.UserNotFoundException;
+import org.tolking.util.RandomString;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,12 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
     @Override
     public void create(TrainerDTO dto){
         Trainer trainer = createConverter.toEntity(dto);
-        trainer.getUser().setIsActive(true);
+        User trainerUser = trainer.getUser();
+        String serialUsername = trainerDAO.getUsername(trainerUser.getUsername());
+
+        trainerUser.setIsActive(true);
+        trainerUser.setUsername(serialUsername);
+        trainerUser.setPassword(RandomString.getAlphaNumericString(10));
 
         trainerDAO.create(trainer);
     }
