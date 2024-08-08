@@ -1,5 +1,7 @@
 package org.tolking.dao;
 
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -7,6 +9,7 @@ import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.tolking.entity.User;
 
 import java.util.Optional;
 
@@ -30,7 +33,7 @@ public abstract class AbstractUserDAO<T> extends AbstractDAO<T> {
         int serialNumber = 1;
         String username = baseUsername;
 
-        while (this.readByUserName(username).isPresent()) {
+        while (this.readByUserNameFromUser(username).isPresent()) {
             username = baseUsername + "_" + serialNumber++;
         }
 
@@ -53,6 +56,28 @@ public abstract class AbstractUserDAO<T> extends AbstractDAO<T> {
             Query<T> query = session.createQuery(cr);
 
             return getSingleTypeOptional(query);
+        }
+    }
+
+    protected Optional<User> readByUserNameFromUser(String username){
+        try (Session session = this.sessionFactory.openSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<User> cr = cb.createQuery(User.class);
+            Root<User> root = cr.from(User.class);
+
+            cr.select(root).where(cb.equal(root.get(USERNAME_ATTRIBUTE), username));
+
+            Query<User> query = session.createQuery(cr);
+
+            try {
+                return Optional.of(query.getSingleResult());
+            }
+            catch (NonUniqueResultException e){
+                return Optional.of(query.getResultList().get(0));
+            }
+            catch (NoResultException e){
+                return Optional.empty();
+            }
         }
     }
 
