@@ -25,9 +25,7 @@ public abstract class AbstractUserDAO<T> extends AbstractDAO<T> {
     }
 
     public void update(T entity) {
-        this.performSessionOperation((session -> {
-            session.merge(entity);
-        }));
+        this.performSessionOperation((session -> session.merge(entity)));
     }
     public String getUsername(String baseUsername){
         int serialNumber = 1;
@@ -92,7 +90,7 @@ public abstract class AbstractUserDAO<T> extends AbstractDAO<T> {
             Predicate passwordPredicate = cb.equal(root.get(USERS_TABLE_PARAM).get(PASSWORD_ATTRIBUTE), password);
 
             // Combine predicates with "and"
-            cr.select(root).where(cb.and(usernamePredicate, passwordPredicate));;
+            cr.select(root).where(cb.and(usernamePredicate, passwordPredicate));
 
             Query<T> query = session.createQuery(cr);
 

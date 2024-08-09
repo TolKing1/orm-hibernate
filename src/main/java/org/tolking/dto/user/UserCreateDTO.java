@@ -13,7 +13,6 @@ public class UserCreateDTO {
     private String lastName;
     @NonNull
     private String username;
-    @NonNull
     private String password;
 
 }

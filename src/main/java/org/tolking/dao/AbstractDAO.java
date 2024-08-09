@@ -21,9 +21,7 @@ public abstract class AbstractDAO<T> implements QueryHelper<T> {
     protected final SessionFactory sessionFactory;
 
     public void create(T entity) {
-       this.performSessionOperation((session -> {
-           session.persist(entity);
-       }));
+       this.performSessionOperation((session -> session.persist(entity)));
     }
 
     protected Optional<T> readByParam(String param, Object value, Class<T> entityClass) {
