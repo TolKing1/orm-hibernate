@@ -31,6 +31,4 @@ public class TrainingTypeServiceImpl implements org.tolking.service.TrainingType
                 ()-> new TrainingTypeNotFoundException(name)
         );
     }
-
-
 }

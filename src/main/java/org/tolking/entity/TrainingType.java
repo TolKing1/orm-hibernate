@@ -19,6 +19,7 @@ public class TrainingType {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TrainingsType name;
 
 }
