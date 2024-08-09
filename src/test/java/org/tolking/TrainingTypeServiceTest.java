@@ -1,7 +1,7 @@
 package org.tolking;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,8 +13,8 @@ import org.tolking.service.impl.TrainingTypeServiceImpl;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class TrainingTypeServiceTest {
@@ -24,13 +24,13 @@ public class TrainingTypeServiceTest {
     @InjectMocks
     private TrainingTypeServiceImpl trainingTypeService;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void create_shouldCreateTrainingType() {
+    public void create_shouldCreateTrainingType() {
         String typeName = "CARDIO";
         TrainingType trainingType = new TrainingType(typeName);
 
@@ -42,7 +42,7 @@ public class TrainingTypeServiceTest {
     }
 
     @Test
-    void findByName_shouldReturnTrainingType_whenFound() throws TrainingTypeNotFoundException {
+    public void findByName_shouldReturnTrainingType_whenFound() throws TrainingTypeNotFoundException {
         String typeName = "CARDIO";
         TrainingsType trainingsType = TrainingsType.valueOf(typeName);
         TrainingType trainingType = new TrainingType(typeName);
@@ -58,7 +58,7 @@ public class TrainingTypeServiceTest {
     }
 
     @Test
-    void findByName_shouldReturnTrainingType_whenNotFound() throws TrainingTypeNotFoundException {
+    public void findByName_shouldReturnTrainingType_whenNotFound() throws TrainingTypeNotFoundException {
         String typeName = "HIIT";
         TrainingsType trainingsType = TrainingsType.valueOf(typeName);
 
