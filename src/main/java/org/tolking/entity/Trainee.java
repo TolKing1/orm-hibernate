@@ -28,11 +28,13 @@ public class Trainee{
     @OneToMany(mappedBy = "trainee", cascade = {CascadeType.REMOVE, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Training> trainingList = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "trainer_trainee_m2m",
-            joinColumns = @JoinColumn(name = "trainer_id"),
-            inverseJoinColumns = @JoinColumn(name = "trainee_id")
-    )
+    @ManyToMany(mappedBy = "traineeList", fetch = FetchType.LAZY)
     private List<Trainer> trainerList = new ArrayList<>();
+
+    @PreUpdate
+    private void updateAssociations() {
+        for (Trainer trainer : this.trainerList) {
+            trainer.getTraineeList().add(this);
+        }
+    }
 }

@@ -12,11 +12,6 @@ public class TrainerUpdateConverter extends DTOConverter<Trainer, TrainerUpdateD
         super(modelMapper);
     }
 
-    public Trainer updateEntity(Trainer trainer, TrainerUpdateDTO trainerDTO){
-        modelMapper.map(trainerDTO, trainer);
-
-        return trainer;
-    }
     @Override
     protected Class<Trainer> getTypeEntity() {
         return Trainer.class;

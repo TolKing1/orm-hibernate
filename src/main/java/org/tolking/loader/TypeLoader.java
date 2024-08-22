@@ -20,13 +20,11 @@ public class TypeLoader implements ApplicationListener<ContextRefreshedEvent> {
         TrainingsType[] values = TrainingsType.values();
 
         for (TrainingsType value : values) {
-            String stringValue = value.name();
-
             try {
-                trainingTypeService.findByName(stringValue);
-                log.warning("Already exists: %s".formatted(stringValue));
+                trainingTypeService.findByName(value);
+                log.warning("Already exists: %s".formatted(value));
             } catch (TrainingTypeNotFoundException e) {
-                trainingTypeService.create(stringValue);
+                trainingTypeService.create(value.toString());
             }
         }
     }

@@ -1,103 +1,175 @@
 package org.tolking.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tolking.dao.TrainerDAO;
-import org.tolking.dto.CriteriaTrainerDTO;
 import org.tolking.dto.LoginDTO;
+import org.tolking.dto.LoginNewPassword;
 import org.tolking.dto.converter.DTOConverter;
-import org.tolking.dto.converter.trainer.TrainerUpdateConverter;
-import org.tolking.dto.trainer.TrainerDTO;
-import org.tolking.dto.trainer.TrainerProfileDTO;
-import org.tolking.dto.trainer.TrainerUpdateDTO;
-import org.tolking.dto.training.TrainingReadDTO;
+import org.tolking.dto.criteria.CriteriaTrainerDTO;
+import org.tolking.dto.trainer.*;
+import org.tolking.dto.training.TrainingTrainerReadDTO;
+import org.tolking.entity.Trainee;
 import org.tolking.entity.Trainer;
-import org.tolking.entity.Training;
+import org.tolking.entity.TrainingType;
 import org.tolking.entity.User;
+import org.tolking.exception.TrainerNotFoundException;
 import org.tolking.exception.UserNotFoundException;
+import org.tolking.repository.TrainerRepository;
+import org.tolking.service.TrainingService;
+import org.tolking.service.TrainingTypeService;
+import org.tolking.service.UserService;
 import org.tolking.util.UserUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Log
+@Slf4j
 public class TrainerServiceImpl implements org.tolking.service.TrainerService {
-    private final TrainerDAO trainerDAO;
-    private final DTOConverter<Trainer, TrainerDTO> createConverter;
+    private final TrainerRepository trainerRepository;
+
+    private final UserService userService;
+    private final TrainingTypeService trainingTypeService;
+    private final TrainingService trainingService;
+
+    private final DTOConverter<Trainer, TrainerCreateDTO> createConverter;
     private final DTOConverter<Trainer, TrainerProfileDTO> profileConverter;
-    private final TrainerUpdateConverter updateConverter;
-    private final DTOConverter<Training, TrainingReadDTO> trainingConverter;
+    private final DTOConverter<Trainer, TrainerUpdateDTO> updateConverter;
+    private final DTOConverter<Trainer, TrainerForTraineeProfileDTO> traineeProfileConverter;
 
     @Override
-    public void create(TrainerDTO dto){
+    public LoginDTO create(TrainerCreateDTO dto) {
+        log.info("Creating trainer with DTO: {}", dto);
         Trainer trainer = createConverter.toEntity(dto);
+        trainer.setTrainingType(getTrainingType(trainer));
         User trainerUser = trainer.getUser();
-        String serialUsername = trainerDAO.getUsername(trainerUser.getUsername());
 
-        UserUtils.prepareUserForCreation(trainerUser,serialUsername);
+        String serialUsername = generateUniqueUsername(trainerUser);
+        prepareUser(trainerUser, serialUsername);
 
-        trainerDAO.create(trainer);
-        log.info("Trainer has been created with username = %s".formatted(serialUsername));
+        Trainer createdTrainer = saveTrainer(trainer);
+        User createdTrainerUser = createdTrainer.getUser();
+
+        log.info("Trainer created with username: {}", createdTrainerUser.getUsername());
+        return new LoginDTO(createdTrainerUser.getUsername(), createdTrainerUser.getPassword());
+    }
+
+    private TrainingType getTrainingType(Trainer trainer) {
+        TrainingType trainingType = trainingTypeService.findByName(trainer.getTrainingType().getName());
+        log.debug("Found training type: {}", trainingType);
+        return trainingType;
+    }
+
+    private String generateUniqueUsername(User user) {
+        String username = userService.getNewUsername(UserUtils.getUsername(user));
+        log.debug("Generated unique username: {}", username);
+        return username;
+    }
+
+    private void prepareUser(User user, String username) {
+        UserUtils.prepareUserForCreation(user, username);
+        log.debug("Prepared user with username: {}", username);
+    }
+
+    private Trainer saveTrainer(Trainer trainer) {
+        log.debug("Saving trainer: {}", trainer);
+        return trainerRepository.save(trainer);
     }
 
     @Override
     public TrainerProfileDTO getProfile(LoginDTO dto) throws UserNotFoundException {
-        Trainer trainer = getTrainer(dto);
-
+        log.info("Fetching profile for user: {}", dto.getUsername());
+        Trainer trainer = getTrainerByLogin(dto);
         return profileConverter.toDto(trainer);
     }
 
     @Override
-    public void updatePassword(LoginDTO dto, String newPassword) throws UserNotFoundException {
-        Trainer trainer = getTrainer(dto);
+    public TrainerProfileDTO update(LoginDTO loginDTO, TrainerUpdateDTO trainerUpdateDTO) throws UserNotFoundException {
+        log.info("Updating trainer profile for user: {}", loginDTO.getUsername());
 
-        trainer.getUser().setPassword(newPassword);
+        Trainer trainer = getTrainerByLogin(loginDTO);
+        trainer = updateConverter.updateEntity(trainer, trainerUpdateDTO);
+        Trainer updatedTrainer = trainerRepository.save(trainer);
 
-        trainerDAO.update(trainer);
-        log.info("Trainer's password has been updated with id = %s".formatted(trainer.getId()));
+        log.info("Trainer profile updated for user: {}", loginDTO.getUsername());
+        return profileConverter.toDto(updatedTrainer);
+
     }
 
-
-
     @Override
-    public void update(LoginDTO loginDTO, TrainerUpdateDTO trainerUpdateDTO) throws UserNotFoundException {
-        Trainer trainer = getTrainer(loginDTO);
-
-        trainer = updateConverter.updateEntity(trainer, trainerUpdateDTO);
-
-        trainerDAO.update(trainer);
-        log.info("Trainer has been updated with id = %s".formatted(trainer.getId()));
+    public void updatePassword(LoginNewPassword dto) throws UserNotFoundException {
+        log.info("Updating password for user: {}", dto.getUsername());
+        Trainer trainer = getTrainerByLogin(new LoginDTO(dto.getUsername(), dto.getPassword()));
+        trainer.getUser().setPassword(dto.getNewPassword());
+        trainerRepository.save(trainer);
+        log.info("Password updated for user: {}", dto.getUsername());
     }
 
     @Override
     public void toggleStatus(LoginDTO loginDTO) throws UserNotFoundException {
-        Trainer trainer = getTrainer(loginDTO);
-
-        trainerDAO.toggleStatus(trainer);
-        log.info("Trainer's status has been toggled with id = %s".formatted(trainer.getId()));
+        log.info("Toggling status for user: {}", loginDTO.getUsername());
+        Trainer trainer = getTrainerByLogin(loginDTO);
+        User user = trainer.getUser();
+        UserUtils.toggleStatus(user);
+        trainerRepository.save(trainer);
+        log.info("Status toggled for user: {}", loginDTO.getUsername());
     }
 
     @Override
-    public List<TrainingReadDTO> getTrainingList(LoginDTO loginDTO, CriteriaTrainerDTO criteria) {
-        Trainer trainer = getTrainer(loginDTO);
+    public List<TrainingTrainerReadDTO> getTrainingList(LoginDTO loginDTO, CriteriaTrainerDTO criteria) {
+        log.info("Fetching training list for user: {} with criteria: {}", loginDTO.getUsername(), criteria);
+        Trainer trainer = getTrainerByLogin(loginDTO);
         String username = trainer.getUser().getUsername();
-        List<Training> trainingList = trainerDAO.getTrainingsByCriteria(
-                criteria.getFrom(),
-                criteria.getTo(),
-                criteria.getTraineeUsername(),
-                username
-        );
-
-        return trainingConverter.toDtoList(trainingList);
+        return trainingService.getTrainerTrainingListByCriteria(username, criteria);
     }
 
-    private Trainer getTrainer(LoginDTO dto) throws UserNotFoundException {
-        return trainerDAO.getByUsernameAndPassword(dto.getUsername(), dto.getPassword())
-                .orElseThrow(()-> {
-                    log.warning("Login credentials is incorrect");
-                    return new UserNotFoundException(dto.getUsername());
-                });
+    @Override
+    public List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(String traineeUsername) throws UserNotFoundException {
+        log.info("Fetching not assigned trainers for trainee: {}", traineeUsername);
+        List<Trainer> trainerList = trainerRepository.findTrainersByUser_IsActiveTrueAndTraineeList_User_UsernameIsNot(traineeUsername);
+        return traineeProfileConverter.toDtoList(trainerList);
+    }
+
+    @Override
+    public List<Trainer> getTrainerListByUsernames(List<TrainerNameDTO> dtoList) throws TrainerNotFoundException {
+        log.info("Fetching trainers for usernames: {}", dtoList);
+        List<Trainer> trainerList = new ArrayList<>();
+        dtoList.forEach(trainerNameDTO -> {
+            Trainer trainer = getTrainerByUsername(trainerNameDTO.getUsername());
+            trainerList.add(trainer);
+        });
+        return trainerList;
+    }
+
+    @Override
+    public Trainer getTrainerByUsername(String username) throws TrainerNotFoundException {
+        log.info("Fetching trainer by username: {}", username);
+        return trainerRepository.getTrainerByUser_Username(username)
+                .orElseThrow(() -> new TrainerNotFoundException(username));
+    }
+
+    @Override
+    public List<TrainerForTraineeProfileDTO> convertToDTOList(List<Trainer> trainerList) {
+        log.debug("Converting trainer list to DTO list");
+        return traineeProfileConverter.toDtoList(trainerList);
+    }
+
+    @Override
+    public void removeTraineeAssociation(Trainee trainee) {
+        log.info("Removing trainee association for trainee: {}", trainee);
+        List<Trainer> trainerList = trainee.getTrainerList();
+        trainerList.forEach(trainer -> {
+            List<Trainee> traineeList = trainer.getTraineeList();
+            traineeList.remove(trainee);
+            trainerRepository.save(trainer);
+        });
+    }
+
+    private Trainer getTrainerByLogin(LoginDTO dto) throws UserNotFoundException {
+        log.info("Fetching trainer by login: {}", dto);
+        return trainerRepository.getTrainerByUser_UsernameAndUser_Password(dto.getUsername(), dto.getPassword())
+                .orElseThrow(() -> new UserNotFoundException(dto.getUsername()));
     }
 }

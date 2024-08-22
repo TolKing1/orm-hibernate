@@ -12,4 +12,11 @@ public class UserUtils {
         user.setIsActive(true);
         user.setUsername(serialUsername);
     }
+    public String getUsername(User user){
+        return user.getFirstName() + "." + user.getLastName();
+    }
+
+    public void toggleStatus(User user){
+        user.setIsActive(!user.getIsActive());
+    }
 }

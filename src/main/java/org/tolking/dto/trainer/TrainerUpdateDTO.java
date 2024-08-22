@@ -1,15 +1,22 @@
 package org.tolking.dto.trainer;
 
-import lombok.*;
-import org.tolking.dto.trainingType.TrainingTypeIdDTO;
-import org.tolking.dto.user.UserProfileDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "DTO for trainer update")
 public class TrainerUpdateDTO {
-    @NonNull
-    private TrainingTypeIdDTO trainingType;
-    private UserProfileDTO user;
+    @JsonProperty("firstName")
+    private String userFirstName;
+    @JsonProperty("lastName")
+    private String userLastName;
+    @JsonProperty("isActive")
+    private boolean userIsActive;
 }

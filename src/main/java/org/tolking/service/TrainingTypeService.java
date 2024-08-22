@@ -1,7 +1,11 @@
 package org.tolking.service;
 
+import org.tolking.dto.trainingType.TrainingTypeDTO;
 import org.tolking.entity.TrainingType;
+import org.tolking.enums.TrainingsType;
 import org.tolking.exception.TrainingTypeNotFoundException;
+
+import java.util.List;
 
 public interface TrainingTypeService {
     /**
@@ -18,5 +22,12 @@ public interface TrainingTypeService {
      * @return TrainingType the TrainingType entity found by the specified name.
      * @throws TrainingTypeNotFoundException if no TrainingType is found with the specified name.
      */
-    TrainingType findByName(String name) throws TrainingTypeNotFoundException;
+    TrainingType findByName(TrainingsType name) throws TrainingTypeNotFoundException;
+
+    /**
+     * Gets a List of all TrainingType.
+     * @return List of TrainingType
+     */
+    List<TrainingTypeDTO> getAll();
+
 }

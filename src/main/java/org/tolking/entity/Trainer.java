@@ -23,7 +23,7 @@ public class Trainer{
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "trainer_trainee_m2m",
             joinColumns = @JoinColumn(name = "trainer_id"),

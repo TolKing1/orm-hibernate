@@ -1,12 +1,13 @@
 package org.tolking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginDTO {
-    @NonNull
     private String username;
-    @NonNull
     private String password;
 }

@@ -18,11 +18,12 @@ public abstract class DTOConverter<E, D> {
         return modelMapper.map(entity, getTypeDTO());
     }
 
-    public List<E> toEntityList(List<D> dtoList) {
-        return dtoList.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList());
+    public E updateEntity(E entity, D dto){
+        modelMapper.map(dto, entity);
+
+        return entity;
     }
+
 
     public List<D> toDtoList(List<E> entityList) {
         return entityList.stream()

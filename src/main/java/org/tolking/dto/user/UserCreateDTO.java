@@ -1,18 +1,18 @@
 package org.tolking.dto.user;
 
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateDTO {
-    @NonNull
+    @NotNull
     private String firstName;
-    @NonNull
+    @NotNull
     private String lastName;
-    @NonNull
-    private String username;
-    private String password;
-
 }
