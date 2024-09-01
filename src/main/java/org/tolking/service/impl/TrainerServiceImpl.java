@@ -100,11 +100,16 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
 
     @Override
     public void updatePassword(LoginNewPassword dto) throws UserNotFoundException {
-        log.info("Updating password for user: {}", dto.getUsername());
-        Trainer trainer = getTrainerByLogin(new LoginDTO(dto.getUsername(), dto.getPassword()));
+        LoginDTO loginDTO = dto.getLoginDTO();
+        String username = loginDTO.getUsername();
+
+        log.info("Updating password for user: {}", username);
+
+        Trainer trainer = getTrainerByLogin(loginDTO);
         trainer.getUser().setPassword(dto.getNewPassword());
         trainerRepository.save(trainer);
-        log.info("Password updated for user: {}", dto.getUsername());
+
+        log.info("Password updated for user: {}", username);
     }
 
     @Override

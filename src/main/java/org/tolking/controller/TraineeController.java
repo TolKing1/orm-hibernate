@@ -1,5 +1,7 @@
 package org.tolking.controller;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,12 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.tolking.dto.LoginDTO;
 import org.tolking.dto.LoginNewPassword;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
-import org.tolking.dto.trainee.TraineeCreateDTO;
-import org.tolking.dto.trainee.TraineeProfileDTO;
-import org.tolking.dto.trainee.TraineeUpdateRequest;
+import org.tolking.dto.trainee.*;
 import org.tolking.dto.trainer.TrainerForTraineeProfileDTO;
-import org.tolking.dto.trainer.TrainerNameDTO;
-import org.tolking.dto.training.TrainingDTO;
 import org.tolking.dto.training.TrainingTraineeReadDTO;
 import org.tolking.entity.Trainee;
 import org.tolking.enums.TrainingsType;
@@ -30,6 +28,7 @@ import org.tolking.service.TrainingService;
 import java.util.Date;
 import java.util.List;
 
+import static org.tolking.config.CustomMetricsConfig.CREATED_TRAINEE_COUNT;
 import static org.tolking.util.ControllerUtils.*;
 
 
@@ -41,6 +40,7 @@ public class TraineeController {
 
     private final TraineeService traineeService;
     private final TrainingService trainingService;
+    private final MeterRegistry meterRegistry;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,12 +51,21 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = ERROR_IN_VALIDATION,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public LoginDTO create(@RequestBody @Valid TraineeCreateDTO dto, BindingResult bindingResult) {
+    public LoginDTO create(@RequestBody @Valid TraineeCreateDTO dto,
+                           BindingResult bindingResult) {
         throwExceptionIfHasError(bindingResult);
-        return traineeService.create(dto);
+
+        LoginDTO loginDTO = traineeService.create(dto);
+
+        //Metric
+        this.meterRegistry
+                .counter(CREATED_TRAINEE_COUNT)
+                .increment();
+
+        return loginDTO;
     }
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Trainee Profile", description = "Retrieves the profile details of the trainee.")
     @ApiResponses({
@@ -65,11 +74,14 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public TraineeProfileDTO profile(@RequestParam String username, @RequestParam String password) {
-        return traineeService.getProfile(new LoginDTO(username, password));
+    public TraineeProfileDTO profile(@RequestBody @Valid LoginDTO loginDTO,
+                                     BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        return traineeService.getProfile(loginDTO);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainee Login", description = "Logs in the trainee by verifying the credentials.")
     @ApiResponses({
@@ -77,8 +89,11 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public void login(@RequestParam String username, @RequestParam String password) {
-        traineeService.getProfile(new LoginDTO(username, password));
+    public void login(@RequestBody LoginDTO loginDTO,
+                      BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        traineeService.getProfile(loginDTO);
     }
 
     @PutMapping("/profile/changePassword")
@@ -89,7 +104,10 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public void changePassword(@RequestBody LoginNewPassword login) {
+    public void changePassword(@RequestBody @Valid LoginNewPassword login,
+                               BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         traineeService.updatePassword(login);
     }
 
@@ -102,7 +120,10 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public TraineeProfileDTO update(@RequestBody TraineeUpdateRequest updateRequest) {
+    public TraineeProfileDTO update(@RequestBody @Valid TraineeUpdateRequest updateRequest,
+                                    BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         return traineeService.update(updateRequest.getLogin(), updateRequest.getDto());
     }
 
@@ -114,7 +135,10 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public void deleteProfile(@RequestBody LoginDTO dto) {
+    public void deleteProfile(@RequestBody @Valid LoginDTO dto,
+                              BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         traineeService.delete(dto);
     }
 
@@ -126,12 +150,16 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public void toggleStatus(@RequestBody LoginDTO login) {
+    public void toggleStatus(@RequestBody @Valid LoginDTO login,
+                             BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         traineeService.toggleStatus(login);
     }
 
-    @GetMapping("/training")
+    @PostMapping("/training/criteria")
     @ResponseStatus(HttpStatus.OK)
+    @Timed(value = "trainee_training.time", description = "Time taken to return training for trainee")
     @Operation(summary = "Get Training List", description = "Retrieves a list of trainings based on criteria.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Training list retrieved successfully",
@@ -139,14 +167,16 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public List<TrainingTraineeReadDTO> getTrainingList(@RequestParam String username,
-                                                        @RequestParam String password,
+    public List<TrainingTraineeReadDTO> getTrainingList(@RequestBody @Valid LoginDTO loginDTO,
+                                                        BindingResult bindingResult,
                                                         @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodFrom,
                                                         @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodTo,
                                                         @RequestParam(required = false) String trainerName,
                                                         @RequestParam(required = false) TrainingsType trainingType) {
+        throwExceptionIfHasError(bindingResult);
+
         return traineeService.getTrainingList(
-                new LoginDTO(username, password),
+                        loginDTO,
                 CriteriaTraineeDTO.builder()
                         .from(periodFrom)
                         .to(periodTo)
@@ -166,17 +196,15 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public void addTraining(@RequestParam String username,
-                            @RequestParam String password,
-                            @RequestBody @Valid TrainingDTO trainingDTO,
+    public void addTraining(@RequestBody @Valid TraineeTrainingCreateRequest trainingDTO,
                             BindingResult bindingResult) {
         throwExceptionIfHasError(bindingResult);
 
-        Trainee trainee = traineeService.getTraineeByLogin(new LoginDTO(username, password));
-        trainingService.createTraining(trainee, trainingDTO);
+        Trainee trainee = traineeService.getTraineeByLogin(trainingDTO.getLoginDTO());
+        trainingService.createTraining(trainee, trainingDTO.getTrainingDTO());
     }
 
-    @GetMapping("/trainer/not-assigned")
+    @PostMapping("/trainer/not-assigned")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Not Assigned Trainers", description = "Retrieves a list of trainers that are not assigned to the trainee and have an active status.")
     @ApiResponses({
@@ -185,9 +213,11 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = "Incorrect credentials",
                     content = @Content(mediaType = CREDENTIALS_IS_INCORRECT, schema = @Schema(implementation = ApiError.class)))
     })
-    public List<TrainerForTraineeProfileDTO> getNotAssignedTrainerList(@RequestParam String username,
-                                                                       @RequestParam String password) {
-        return traineeService.getNotAssignedTrainers(new LoginDTO(username, password));
+    public List<TrainerForTraineeProfileDTO> getNotAssignedTrainerList(@RequestBody @Valid LoginDTO loginDTO,
+                                                                       BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        return traineeService.getNotAssignedTrainers(loginDTO);
     }
 
     @PutMapping("/trainer")
@@ -199,9 +229,10 @@ public class TraineeController {
             @ApiResponse(responseCode = "401", description = CREDENTIALS_IS_INCORRECT,
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class)))
     })
-    public List<TrainerForTraineeProfileDTO> updateTrainerList(@RequestParam String username,
-                                                               @RequestParam String password,
-                                                               @RequestBody List<TrainerNameDTO> dtoList) {
-        return traineeService.updateTrainerList(new LoginDTO(username, password), dtoList);
+    public List<TrainerForTraineeProfileDTO> updateTrainerList(@RequestBody @Valid TraineeTrainerUpdateRequest updateRequest,
+                                                               BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        return traineeService.updateTrainerList(updateRequest.getLoginDTO(), updateRequest.getDtoList());
     }
 }

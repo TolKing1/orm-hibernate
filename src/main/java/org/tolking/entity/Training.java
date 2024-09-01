@@ -1,6 +1,7 @@
 package org.tolking.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class Training {
     private Date date;
 
     @Column(nullable = false)
+    @Positive
     private long duration;
 
 

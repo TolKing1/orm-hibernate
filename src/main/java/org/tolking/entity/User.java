@@ -1,6 +1,7 @@
 package org.tolking.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
@@ -21,6 +22,7 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @Size(min = 3, max = 100)
     private String password;
 
     @Column(name = "is_active", nullable = false)

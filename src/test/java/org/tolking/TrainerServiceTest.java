@@ -172,8 +172,9 @@ public class TrainerServiceTest {
 
     @Test
     public void updatePassword_shouldUpdatePassword_whenTrainerExists() throws UserNotFoundException {
-        LoginNewPassword loginNewPassword = new LoginNewPassword("username", "password", "newPassword");
-        when(trainerRepository.getTrainerByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword()))
+        LoginNewPassword loginNewPassword = new LoginNewPassword(new LoginDTO("traineeUsername", "traineePassword"), "newPassword");
+        LoginDTO loginDTO1 = loginNewPassword.getLoginDTO();
+        when(trainerRepository.getTrainerByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword()))
                 .thenReturn(Optional.of(trainer));
 
         trainerService.updatePassword(loginNewPassword);
@@ -184,13 +185,14 @@ public class TrainerServiceTest {
 
     @Test
     public void updatePassword_shouldThrowUserNotFoundException_whenTrainerDoesNotExist() {
-        LoginNewPassword loginNewPassword = new LoginNewPassword("username", "password", "newPassword");
-        when(trainerRepository.getTrainerByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword()))
+        LoginNewPassword loginNewPassword = new LoginNewPassword(new LoginDTO("traineeUsername", "traineePassword"), "newPassword");
+        LoginDTO loginDTO1 = loginNewPassword.getLoginDTO();
+        when(trainerRepository.getTrainerByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword()))
                 .thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> trainerService.updatePassword(loginNewPassword));
         verify(trainerRepository, times(1))
-                .getTrainerByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword());
+                .getTrainerByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword());
     }
 
     @Test

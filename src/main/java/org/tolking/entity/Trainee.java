@@ -37,4 +37,11 @@ public class Trainee{
             trainer.getTraineeList().add(this);
         }
     }
+
+    @PreRemove
+    private void removeAssociations() {
+        for (Trainer trainer : this.trainerList) {
+            trainer.getTraineeList().remove(this);
+        }
+    }
 }

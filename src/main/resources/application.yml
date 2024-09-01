@@ -1,10 +1,58 @@
 spring:
+  config:
+    activate:
+      on-profile: "local"
   datasource:
     url:  jdbc:postgresql:${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jooq:
     sql-dialect:  org.hibernate.dialect.PostgreSQLDialect
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          ["health","prometheus"]
+  endpoint:
+    health:
+      show-details: always
+---
+spring:
+  config:
+    activate:
+      on-profile: "test"
+  datasource:
+    url:  jdbc:h2:mem:gym-club
+    username: test
+    password: test
+  jooq:
+    sql-dialect:  org.hibernate.dialect.H2Dialect
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  datasource:
+    url:  jdbc:mariadb://localhost:5432/gym
+    username: root
+    password: root
+  jooq:
+    sql-dialect:  org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,3 +63,13 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          ["health","prometheus"]
+  endpoint:
+    health:
+      show-details: always

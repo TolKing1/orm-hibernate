@@ -1,5 +1,6 @@
 package org.tolking.controller;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,7 +53,7 @@ public class TrainerController {
         return trainerService.create(dto);
     }
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get trainer profile")
     @ApiResponses({
@@ -62,11 +63,14 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    TrainerProfileDTO profile(@RequestParam String username, @RequestParam String password) {
-        return trainerService.getProfile(new LoginDTO(username, password));
+    TrainerProfileDTO profile(@RequestBody @Valid LoginDTO loginDTO,
+                              BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        return trainerService.getProfile(loginDTO);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainer login")
     @ApiResponses({
@@ -76,8 +80,11 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    void login(@RequestParam String username, @RequestParam String password) {
-        trainerService.getProfile(new LoginDTO(username, password));
+    void login(@RequestBody @Valid LoginDTO loginDTO,
+               BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        trainerService.getProfile(loginDTO);
     }
 
     @PutMapping("/profile/changePassword")
@@ -90,12 +97,16 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    void changePassword(@RequestBody LoginNewPassword login) {
+    void changePassword(@RequestBody @Valid LoginNewPassword login,
+                        BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         trainerService.updatePassword(login);
     }
 
     @PutMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
+    @Timed(value = "trainer_profile.time", description = "Time taken to update trainer's profile")
     @Operation(summary = "Trainer profile change profile")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = PROFILE_HAS_BEEN_CHANGED),
@@ -104,7 +115,10 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    TrainerProfileDTO update(@RequestBody TrainerUpdateRequest updateRequest) {
+    TrainerProfileDTO update(@RequestBody @Valid TrainerUpdateRequest updateRequest,
+                             BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         return trainerService.update(updateRequest.getLogin(), updateRequest.getDto());
     }
 
@@ -118,11 +132,14 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    void toggleStatus(@RequestBody LoginDTO login) {
+    void toggleStatus(@RequestBody @Valid LoginDTO login,
+                      BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
         trainerService.toggleStatus(login);
     }
 
-    @GetMapping("/training")
+    @PostMapping("/training/criteria")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainer's training list by criteria")
     @ApiResponses({
@@ -132,13 +149,15 @@ public class TrainerController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
 
     })
-    List<TrainingTrainerReadDTO> getTrainingList(@RequestParam String username,
-                                                 @RequestParam String password,
+    List<TrainingTrainerReadDTO> getTrainingList(@RequestBody @Valid LoginDTO loginDTO,
+                                                 BindingResult bindingResult,
                                                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodFrom,
                                                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodTo,
                                                  @RequestParam(required = false) String traineeName) {
+        throwExceptionIfHasError(bindingResult);
+
         return trainerService.getTrainingList(
-                new LoginDTO(username, password),
+                loginDTO,
                 CriteriaTrainerDTO.builder()
                         .from(periodFrom)
                         .to(periodTo)

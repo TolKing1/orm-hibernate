@@ -128,8 +128,9 @@ public class TraineeServiceTest {
 
     @Test
     public void updatePassword_shouldUpdatePassword_whenTraineeExists() throws UserNotFoundException {
-        LoginNewPassword loginNewPassword = new LoginNewPassword("traineeUsername", "traineePassword", "newPassword");
-        when(traineeRepository.getTraineeByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword()))
+        LoginNewPassword loginNewPassword = new LoginNewPassword(new LoginDTO("traineeUsername", "traineePassword"), "newPassword");
+        LoginDTO loginDTO1 = loginNewPassword.getLoginDTO();
+        when(traineeRepository.getTraineeByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword()))
                 .thenReturn(Optional.of(trainee));
 
         traineeService.updatePassword(loginNewPassword);
@@ -140,13 +141,14 @@ public class TraineeServiceTest {
 
     @Test
     public void updatePassword_shouldThrowUserNotFoundException_whenTraineeDoesNotExist() {
-        LoginNewPassword loginNewPassword = new LoginNewPassword("traineeUsername", "traineePassword", "newPassword");
-        when(traineeRepository.getTraineeByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword()))
+        LoginNewPassword loginNewPassword = new LoginNewPassword(new LoginDTO("traineeUsername", "traineePassword"), "newPassword");
+        LoginDTO loginDTO1 = loginNewPassword.getLoginDTO();
+        when(traineeRepository.getTraineeByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword()))
                 .thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> traineeService.updatePassword(loginNewPassword));
         verify(traineeRepository, times(1))
-                .getTraineeByUser_UsernameAndUser_Password(loginNewPassword.getUsername(), loginNewPassword.getPassword());
+                .getTraineeByUser_UsernameAndUser_Password(loginDTO1.getUsername(), loginDTO1.getPassword());
     }
 
     @Test

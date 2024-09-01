@@ -86,13 +86,16 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public void updatePassword(LoginNewPassword dto) throws UserNotFoundException {
-        log.info("Updating password for user: {}", dto.getUsername());
+        LoginDTO loginDTO = dto.getLoginDTO();
+        String username = loginDTO.getUsername();
 
-        Trainee trainee = getTraineeByLogin(new LoginDTO(dto.getUsername(), dto.getPassword()));
+        log.info("Updating password for user: {}", username);
+
+        Trainee trainee = getTraineeByLogin(dto.getLoginDTO());
         trainee.getUser().setPassword(dto.getNewPassword());
         traineeRepository.save(trainee);
 
-        log.info("Password updated for user: {}", dto.getUsername());
+        log.info("Password updated for user: {}", username);
     }
 
     @Override
@@ -145,7 +148,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public List<TrainerForTraineeProfileDTO> updateTrainerList(LoginDTO loginDTO, List<TrainerNameDTO> trainerNameDTOList) throws TrainerNotFoundException {
+    public List<TrainerForTraineeProfileDTO> updateTrainerList(LoginDTO loginDTO, List<TrainerNameDTO> trainerNameDTOList) throws TrainerNotFoundException, UserNotFoundException, IllegalArgumentException {
         log.info("Updating trainer list for user: {}", loginDTO.getUsername());
 
         Trainee trainee = setTrainerList(loginDTO, trainerNameDTOList);
@@ -162,9 +165,14 @@ public class TraineeServiceImpl implements TraineeService {
                 .orElseThrow(() -> new UserNotFoundException(dto.getUsername()));
     }
 
-    private Trainee setTrainerList(LoginDTO loginDTO, List<TrainerNameDTO> trainerNameDTOList) {
+    private Trainee setTrainerList(LoginDTO loginDTO, List<TrainerNameDTO> trainerNameDTOList) throws IllegalArgumentException {
         Trainee trainee = getTraineeByLogin(loginDTO);
         List<Trainer> newTrainerList = trainerService.getTrainerListByUsernames(trainerNameDTOList);
+
+        if (newTrainerList.isEmpty()){
+            throw new IllegalArgumentException("Trainer list can't be empty");
+        }
+
         trainerService.removeTraineeAssociation(trainee);
         trainee.setTrainerList(newTrainerList);
         return trainee;

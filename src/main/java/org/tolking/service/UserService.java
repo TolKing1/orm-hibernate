@@ -1,5 +1,9 @@
 package org.tolking.service;
 
+import jakarta.validation.constraints.NotEmpty;
+import org.springframework.validation.annotation.Validated;
+
+@Validated
 public interface UserService {
     /**
      * Generates a new unique username based on the provided base username.
@@ -11,5 +15,6 @@ public interface UserService {
      * @param baseUsername the base username to be used for generating a new unique username.
      * @return the unique username that does not exist in the system.
      */
-    String getNewUsername(String baseUsername);
+    @Validated
+    String getNewUsername(@NotEmpty String baseUsername);
 }

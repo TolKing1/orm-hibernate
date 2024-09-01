@@ -1,5 +1,9 @@
 package org.tolking.service;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
 import org.tolking.dto.training.TrainingDTO;
@@ -11,6 +15,7 @@ import org.tolking.exception.TrainerNotFoundException;
 
 import java.util.List;
 
+@Validated
 public interface TrainingService {
 
     /**
@@ -20,7 +25,8 @@ public interface TrainingService {
      * @param criteria the criteria for filtering the list of trainings.
      * @return List of TrainingTraineeReadDTO representing the trainings that match the criteria.
      */
-    List<TrainingTraineeReadDTO> getTraineeTrainingListByCriteria(String username, CriteriaTraineeDTO criteria);
+    @Validated
+    List<TrainingTraineeReadDTO> getTraineeTrainingListByCriteria(@NotEmpty String username, @NotNull CriteriaTraineeDTO criteria);
 
     /**
      * Retrieves a list of trainings for a Trainer based on the provided criteria.
@@ -29,7 +35,8 @@ public interface TrainingService {
      * @param criteria the criteria for filtering the list of trainings.
      * @return List of TrainingTrainerReadDTO representing the trainings that match the criteria.
      */
-    List<TrainingTrainerReadDTO> getTrainerTrainingListByCriteria(String username, CriteriaTrainerDTO criteria);
+    @Validated
+    List<TrainingTrainerReadDTO> getTrainerTrainingListByCriteria(@NotEmpty String username, @NotNull CriteriaTrainerDTO criteria);
 
     /**
      * Creates a new training session for a Trainee.
@@ -39,5 +46,6 @@ public interface TrainingService {
      * @throws TrainerNotFoundException if the Trainer specified in the DTO is not found.
      * @throws TraineeNotFoundException if the Trainee is not found.
      */
-    void createTraining(Trainee trainee, TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException;
+    @Validated
+    void createTraining(@NotNull Trainee trainee, @NotNull @Valid TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException;
 }

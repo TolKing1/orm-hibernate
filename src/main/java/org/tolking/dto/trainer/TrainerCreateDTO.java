@@ -2,6 +2,7 @@ package org.tolking.dto.trainer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +18,12 @@ import org.tolking.enums.TrainingsType;
 public class TrainerCreateDTO {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("firstName")
-    @NotNull(message = "FirstName can't be null")
+    @NotEmpty(message = "FirstName can't be empty")
     private String userFirstName;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lastName")
-    @NotNull(message = "LastName can't be null")
+    @NotEmpty(message = "LastName can't be empty")
     private String userLastName;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

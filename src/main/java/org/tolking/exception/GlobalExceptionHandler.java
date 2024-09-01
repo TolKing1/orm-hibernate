@@ -1,6 +1,7 @@
 package org.tolking.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +68,31 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiError, NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(Exception e, HttpServletRequest request) {
+        log.error("IllegalArgumentException occurred: {}", e.getMessage());
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getLocalizedMessage(),
+                BAD_REQUEST.name(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiError, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleValidation(Exception e, HttpServletRequest request) {
+        log.error("ConstraintViolationException occurred: {}", e.getMessage());
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getLocalizedMessage(),
+                BAD_REQUEST.name(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiError, BAD_REQUEST);
     }
 }

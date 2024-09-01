@@ -1,5 +1,9 @@
 package org.tolking.service;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.tolking.dto.LoginDTO;
 import org.tolking.dto.LoginNewPassword;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
@@ -12,6 +16,7 @@ import org.tolking.exception.UserNotFoundException;
 
 import java.util.List;
 
+@Validated
 public interface TrainerService {
 
     /**
@@ -21,7 +26,8 @@ public interface TrainerService {
      *            to create a new Trainer.
      * @return LoginDTO containing the username and password of the created Trainer.
      */
-    LoginDTO create(TrainerCreateDTO dto);
+    @Validated
+    LoginDTO create(@Valid @NotNull TrainerCreateDTO dto);
 
     /**
      * Retrieves the profile of a Trainer based on login credentials.
@@ -31,7 +37,8 @@ public interface TrainerService {
      * @return TrainerProfileDTO representing the Trainer's profile.
      * @throws UserNotFoundException if the Trainer is not found based on the provided credentials.
      */
-    TrainerProfileDTO getProfile(LoginDTO dto) throws UserNotFoundException;
+    @Validated
+    TrainerProfileDTO getProfile(@Valid @NotNull LoginDTO dto) throws UserNotFoundException;
 
     /**
      * Updates the Trainer's information based on login credentials and the provided
@@ -44,7 +51,8 @@ public interface TrainerService {
      * @return TrainerProfileDTO representing the updated Trainer's profile.
      * @throws UserNotFoundException if the Trainer is not found based on the provided credentials.
      */
-    TrainerProfileDTO update(LoginDTO loginDTO, TrainerUpdateDTO trainerUpdateDTO) throws UserNotFoundException;
+    @Validated
+    TrainerProfileDTO update(@Valid @NotNull LoginDTO loginDTO,@NotNull TrainerUpdateDTO trainerUpdateDTO) throws UserNotFoundException;
 
     /**
      * Updates the password for a Trainer based on login credentials.
@@ -53,7 +61,8 @@ public interface TrainerService {
      *            for authenticating the Trainer.
      * @throws UserNotFoundException if the Trainer is not found based on the provided credentials.
      */
-    void updatePassword(LoginNewPassword dto) throws UserNotFoundException;
+    @Validated
+    void updatePassword(@Valid @NotNull LoginNewPassword dto) throws UserNotFoundException;
 
     /**
      * Toggles the active status of a Trainer based on login credentials.
@@ -62,7 +71,8 @@ public interface TrainerService {
      *                 for authenticating the Trainer.
      * @throws UserNotFoundException if the Trainer is not found based on the provided credentials.
      */
-    void toggleStatus(LoginDTO loginDTO) throws UserNotFoundException;
+    @Validated
+    void toggleStatus(@Valid @NotNull LoginDTO loginDTO) throws UserNotFoundException;
 
     /**
      * Retrieves a list of trainings for a Trainer based on login credentials and
@@ -74,7 +84,8 @@ public interface TrainerService {
      * @return List of TrainingTrainerReadDTO representing the trainings that match the criteria.
      * @throws UserNotFoundException if the Trainer is not found based on the provided credentials.
      */
-    List<TrainingTrainerReadDTO> getTrainingList(LoginDTO loginDTO, CriteriaTrainerDTO criteria) throws UserNotFoundException;
+    @Validated
+    List<TrainingTrainerReadDTO> getTrainingList(@Valid @NotNull LoginDTO loginDTO,@NotNull CriteriaTrainerDTO criteria) throws UserNotFoundException;
 
     /**
      * Retrieves a list of trainers that are not assigned to the specified Trainee.
@@ -84,7 +95,8 @@ public interface TrainerService {
      *         that are not assigned to the Trainee.
      * @throws UserNotFoundException if the Trainee is not found based on the provided username.
      */
-    List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(String traineeUsername) throws UserNotFoundException;
+    @Validated
+    List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(@NotEmpty String traineeUsername) throws UserNotFoundException;
 
     /**
      * Retrieves a list of Trainers based on the provided list of TrainerNameDTOs.
@@ -93,7 +105,8 @@ public interface TrainerService {
      * @return List of Trainer representing the Trainers that match the provided usernames.
      * @throws TrainerNotFoundException if any of the Trainers are not found based on the provided usernames.
      */
-    List<Trainer> getTrainerListByUsernames(List<TrainerNameDTO> dtoList) throws TrainerNotFoundException;
+    @Validated
+    List<Trainer> getTrainerListByUsernames(@NotNull List<TrainerNameDTO> dtoList) throws TrainerNotFoundException;
 
     /**
      * Retrieves a Trainer based on the provided username.
@@ -102,7 +115,8 @@ public interface TrainerService {
      * @return Trainer representing the Trainer with the specified username.
      * @throws TrainerNotFoundException if the Trainer is not found based on the provided username.
      */
-    Trainer getTrainerByUsername(String username) throws TrainerNotFoundException;
+    @Validated
+    Trainer getTrainerByUsername(@NotNull String username) throws TrainerNotFoundException;
 
     /**
      * Converts a list of Trainer entities to a list of TrainerForTraineeProfileDTOs.
@@ -110,12 +124,14 @@ public interface TrainerService {
      * @param trainerList a list of Trainer entities to be converted.
      * @return List of TrainerForTraineeProfileDTO representing the converted Trainer entities.
      */
-    List<TrainerForTraineeProfileDTO> convertToDTOList(List<Trainer> trainerList);
+    @Validated
+    List<TrainerForTraineeProfileDTO> convertToDTOList(@NotNull List<Trainer> trainerList);
 
     /**
      * Removes the association of a Trainee from all Trainers.
      *
      * @param trainee the Trainee whose associations are to be removed.
      */
-    void removeTraineeAssociation(Trainee trainee);
+    @Validated
+    void removeTraineeAssociation(@NotNull Trainee trainee);
 }
