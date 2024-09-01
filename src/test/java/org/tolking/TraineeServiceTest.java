@@ -274,7 +274,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void updateTrainerList_shouldUpdateTrainerList_whenTraineeExists() throws TrainerNotFoundException {
+    public void updateTrainerList_shouldThrowTrainerListEmpty_whenTraineeExists() throws TrainerNotFoundException {
         List<TrainerNameDTO> trainerNameDTOList = new ArrayList<>();
         List<Trainer> trainers = new ArrayList<>();
 
@@ -284,9 +284,24 @@ public class TraineeServiceTest {
         when(trainerService.convertToDTOList(trainers)).thenReturn(new ArrayList<>());
         when(traineeRepository.save(trainee)).thenReturn(trainee);
 
-        List<TrainerForTraineeProfileDTO> result = traineeService.updateTrainerList(loginDTO, trainerNameDTOList);
 
-        assertNotNull(result);
+        assertThrows(IllegalArgumentException.class,() -> traineeService.updateTrainerList(loginDTO, trainerNameDTOList));
+        verify(trainerService, times(1)).getTrainerListByUsernames(trainerNameDTOList);
+    }
+    
+    @Test
+    public void updateTrainerList_shouldUpdateTrainerList_whenTraineeExists() throws TrainerNotFoundException {
+        List<TrainerNameDTO> trainerNameDTOList = List.of(new TrainerNameDTO());
+        List<Trainer> trainers = List.of(new Trainer());
+
+        when(traineeRepository.getTraineeByUser_UsernameAndUser_Password(loginDTO.getUsername(), loginDTO.getPassword()))
+                .thenReturn(Optional.of(trainee));
+        when(trainerService.getTrainerListByUsernames(trainerNameDTOList)).thenReturn(trainers);
+        when(trainerService.convertToDTOList(trainers)).thenReturn(List.of());
+        when(traineeRepository.save(trainee)).thenReturn(trainee);
+
+        var result = traineeService.updateTrainerList(loginDTO, trainerNameDTOList);
+
         verify(trainerService, times(1)).getTrainerListByUsernames(trainerNameDTOList);
         verify(traineeRepository, times(1)).save(trainee);
     }

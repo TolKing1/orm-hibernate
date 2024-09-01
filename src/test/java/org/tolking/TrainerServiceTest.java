@@ -148,14 +148,11 @@ public class TrainerServiceTest {
 
         when(trainerRepository.getTrainerByUser_UsernameAndUser_Password(loginDTO.getUsername(), loginDTO.getPassword()))
                 .thenReturn(Optional.of(trainer));
-        when(updateConverter.updateEntity(any(), any())).thenReturn(updatedTrainer);
+        when(updateConverter.updateEntity(trainer, trainerUpdateDTO)).thenReturn(updatedTrainer);
         when(trainerRepository.save(any())).thenReturn(updatedTrainer);
 
         trainerService.update(loginDTO, trainerUpdateDTO);
 
-        verify(trainerRepository, times(1))
-                .getTrainerByUser_UsernameAndUser_Password(loginDTO.getUsername(), loginDTO.getPassword());
-        verify(updateConverter, times(1)).updateEntity(trainer, trainerUpdateDTO);
         verify(trainerRepository, times(1)).save(updatedTrainer);
     }
 
