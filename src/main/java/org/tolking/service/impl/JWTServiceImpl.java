@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.tolking.entity.User;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JWTServiceImpl implements org.tolking.service.JWTService {
     private final String jwtSigningKey;
 
@@ -38,6 +40,7 @@ public class JWTServiceImpl implements org.tolking.service.JWTService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
+        log.debug("Generating token for username: {}", userDetails.getUsername());
         Map<String, Object> claims = new HashMap<>();
 
         if (userDetails instanceof User customUserDetails) {

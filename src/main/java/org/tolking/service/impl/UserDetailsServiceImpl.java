@@ -8,8 +8,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.tolking.dto.LoginDTO;
+import org.tolking.exception.BadLoginException;
+import org.tolking.exception.LoginAttemptSucceedException;
 import org.tolking.exception.UserNotFoundException;
 import org.tolking.repository.UserRepository;
+import org.tolking.service.BruteForceProtectionService;
 import org.tolking.service.JWTService;
 import org.tolking.service.UserDetailsService;
 
@@ -21,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JWTService jwtService;
+    private final BruteForceProtectionService bruteForceProtectionService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
@@ -30,13 +34,28 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public String signIn(LoginDTO loginDTO) throws AuthenticationException {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsername(),
-                loginDTO.getPassword()
-        ));
+    public String signIn(LoginDTO loginDTO) throws BadLoginException, LoginAttemptSucceedException{
+        String username = loginDTO.getUsername();
+        log.debug("Try to login with username: {}", username);
 
-        var user = this.loadUserByUsername(loginDTO.getUsername());
+        if (bruteForceProtectionService.isBlocked(username)){
+            throw new LoginAttemptSucceedException();
+        }
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    username,
+                    loginDTO.getPassword()
+            ));
+        } catch (AuthenticationException ignored) {
+            bruteForceProtectionService.loginFailed(username);
+
+            throw new BadLoginException();
+        }
+
+        var user = this.loadUserByUsername(username);
+
+        bruteForceProtectionService.loginSucceeded(username);
 
         return jwtService.generateToken(user);
     }

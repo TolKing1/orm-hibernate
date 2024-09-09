@@ -48,6 +48,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
 
                 )
+                .logout(logout -> logout
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
+                        .permitAll()
+                )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
