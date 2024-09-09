@@ -71,7 +71,6 @@ public class TraineeServiceTest {
     private String traineeUsername;
     private String traineePassword;
     private Trainee trainee;
-    private LoginDTO loginDTO;
     private User user;
 
     @BeforeEach
@@ -317,7 +316,7 @@ public class TraineeServiceTest {
         when(trainerService.convertToDTOList(trainers)).thenReturn(List.of());
         when(traineeRepository.save(trainee)).thenReturn(trainee);
 
-        var result = traineeService.updateTrainerList(traineeUsername, trainerNameDTOList);
+        traineeService.updateTrainerList(traineeUsername, trainerNameDTOList);
 
         verify(trainerService, times(1)).getTrainerListByUsernames(trainerNameDTOList);
         verify(traineeRepository, times(1)).save(trainee);
