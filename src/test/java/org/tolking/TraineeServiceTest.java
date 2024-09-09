@@ -78,7 +78,6 @@ public class TraineeServiceTest {
         traineeUsername = "traineeUsername";
         traineePassword = "traineePassword";
 
-        loginDTO = new LoginDTO(traineeUsername, traineePassword);
         traineeCreateDTO = new TraineeCreateDTO();
         traineeUpdateDTO = new TraineeUpdateDTO();
 
