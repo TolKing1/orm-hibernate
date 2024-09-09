@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.tolking.dto.converter.DTOConverter;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
 import org.tolking.dto.training.TrainingDTO;
@@ -32,6 +33,12 @@ public class TrainingServiceTest {
 
     @Mock
     private TrainerService trainerService;
+
+    @Mock
+    private DTOConverter<Training, TrainingTraineeReadDTO> readTraineeConverter;
+
+    @Mock
+    private DTOConverter<Training, TrainingTrainerReadDTO> readTrainerConverter;
 
     @InjectMocks
     private TrainingServiceImpl trainingService;
