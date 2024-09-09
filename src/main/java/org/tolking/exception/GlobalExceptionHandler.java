@@ -18,12 +18,12 @@ public class GlobalExceptionHandler {
     public static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
 
     @ExceptionHandler(InvalidDataException.class)
-    public ResponseEntity<ApiError> handleInvalidDataException(InvalidDataException exception, HttpServletRequest request) {
-        log.error("InvalidDataException occurred: {}", exception.getMessage());
+    public ResponseEntity<ApiError> handleInvalidDataException(InvalidDataException e, HttpServletRequest request) {
+        log(e);;
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
-                exception.getLocalizedMessage(),
+                e.getLocalizedMessage(),
                 BAD_REQUEST.name(),
                 LocalDateTime.now()
         );
@@ -31,26 +31,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException exception, HttpServletRequest request) {
-        log.error("UserNotFoundException occurred: {}", exception.getMessage());
+    public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException e, HttpServletRequest request) {
+        log(e);;
 
-        HttpStatus unauthorized = HttpStatus.UNAUTHORIZED;
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
-                exception.getLocalizedMessage(),
-                unauthorized.name(),
+                e.getLocalizedMessage(),
+                NOT_FOUND.name(),
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(apiError, unauthorized);
+        return new ResponseEntity<>(apiError, NOT_FOUND);
     }
 
     @ExceptionHandler(TrainerNotFoundException.class)
-    public ResponseEntity<ApiError> handleTrainerNotFoundException(TrainerNotFoundException exception, HttpServletRequest request) {
-        log.error("TrainerNotFoundException occurred: {}", exception.getMessage());
+    public ResponseEntity<ApiError> handleTrainerNotFoundException(TrainerNotFoundException e, HttpServletRequest request) {
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
-                exception.getLocalizedMessage(),
+                e.getLocalizedMessage(),
                 NOT_FOUND.name(),
                 LocalDateTime.now()
         );
@@ -58,12 +57,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TraineeNotFoundException.class)
-    public ResponseEntity<ApiError> handleTraineeNotFoundException(TraineeNotFoundException exception, HttpServletRequest request) {
-        log.error("TraineeNotFoundException occurred: {}", exception.getMessage());
+    public ResponseEntity<ApiError> handleTraineeNotFoundException(TraineeNotFoundException e, HttpServletRequest request) {
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
-                exception.getLocalizedMessage(),
+                e.getLocalizedMessage(),
                 NOT_FOUND.name(),
                 LocalDateTime.now()
         );
@@ -72,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(Exception e, HttpServletRequest request) {
-        log.error("IllegalArgumentException occurred: {}", e.getMessage());
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
@@ -85,7 +84,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleValidation(Exception e, HttpServletRequest request) {
-        log.error("ConstraintViolationException occurred: {}", e.getMessage());
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
@@ -94,5 +93,9 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiError, BAD_REQUEST);
+    }
+
+    private static void log(Throwable exception) {
+        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage());
     }
 }

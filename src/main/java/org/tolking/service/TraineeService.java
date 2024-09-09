@@ -1,10 +1,10 @@
 package org.tolking.service;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.tolking.dto.LoginDTO;
-import org.tolking.dto.LoginNewPassword;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.trainee.TraineeCreateDTO;
 import org.tolking.dto.trainee.TraineeProfileDTO;
@@ -13,8 +13,8 @@ import org.tolking.dto.trainer.TrainerForTraineeProfileDTO;
 import org.tolking.dto.trainer.TrainerNameDTO;
 import org.tolking.dto.training.TrainingTraineeReadDTO;
 import org.tolking.entity.Trainee;
+import org.tolking.exception.TraineeNotFoundException;
 import org.tolking.exception.TrainerNotFoundException;
-import org.tolking.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -28,114 +28,97 @@ public interface TraineeService {
      *            to create a new Trainee.
      * @return LoginDTO containing the generated username and password for the Trainee.
      */
-    @Validated
     LoginDTO create(@Valid @NotNull TraineeCreateDTO dto);
 
     /**
-     * Retrieves the profile of a Trainee based on login credentials.
+     * Retrieves the profile of a Trainee based on the username.
      *
-     * @param dto the data transfer object containing the username and password
-     *            for authenticating the Trainee.
-     * @return TraineeProfileDTO the data transfer object representing the Trainee's profile.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @param username the username of the Trainee.
+     * @return TraineeProfileDTO representing the Trainee's profile.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    TraineeProfileDTO getProfile(@Valid @NotNull LoginDTO dto) throws UserNotFoundException;
+    TraineeProfileDTO getProfile(@NotEmpty String username) throws TraineeNotFoundException;
 
     /**
-     * Updates the password for a Trainee based on login credentials.
+     * Updates the password for a Trainee based on the username and new password.
      *
-     * @param dto the data transfer object containing the username, password and new password
-     *            for authenticating the Trainee.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @param username   the username of the Trainee.
+     * @param newPassword the new password for the Trainee.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    void updatePassword(@Valid @NotNull LoginNewPassword dto) throws UserNotFoundException;
+    void updatePassword(@NotEmpty String username, @NotEmpty String newPassword) throws TraineeNotFoundException;
 
     /**
-     * Updates the Trainee's information based on login credentials and the provided
+     * Updates the Trainee's information based on the username and the provided
      * TraineeUpdateDTO.
      *
-     * @param loginDTO the data transfer object containing the username and password
-     *                 for authenticating the Trainee.
+     * @param username the username of the Trainee.
      * @param traineeUpdateDTO the data transfer object containing the updated information
      *                         for the Trainee.
-     * @return TraineeProfileDTO the data transfer object representing the Trainee's updated profile.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @return TraineeProfileDTO representing the updated Trainee's profile.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    TraineeProfileDTO update(@Valid @NotNull LoginDTO loginDTO,@NotNull TraineeUpdateDTO traineeUpdateDTO) throws UserNotFoundException;
+    TraineeProfileDTO update(@NotEmpty String username, @Valid @NotNull TraineeUpdateDTO traineeUpdateDTO) throws TraineeNotFoundException;
 
     /**
-     * Toggles the active status of a Trainee based on login credentials.
+     * Toggles the active status of a Trainee based on the username.
      *
-     * @param loginDTO the data transfer object containing the username and password
-     *                 for authenticating the Trainee.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @param username the username of the Trainee.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    void toggleStatus(@Valid @NotNull LoginDTO loginDTO) throws UserNotFoundException;
+    void toggleStatus(@NotEmpty String username) throws TraineeNotFoundException;
 
     /**
-     * Deletes a Trainee based on login credentials.
+     * Deletes a Trainee based on the username.
      *
-     * @param dto the data transfer object containing the username and password
-     *            for authenticating the Trainee.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @param username the username of the Trainee.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    void delete(@Valid @NotNull LoginDTO dto) throws UserNotFoundException;
+    void delete(@NotEmpty String username) throws TraineeNotFoundException;
 
     /**
-     * Retrieves a list of trainings for a Trainee based on login credentials and
+     * Retrieves a list of trainings for a Trainee based on the username and
      * the provided criteria.
      *
-     * @param loginDTO the data transfer object containing the username and password
-     *                 for authenticating the Trainee.
+     * @param username the username of the Trainee.
      * @param criteria the criteria for filtering the list of trainings.
      * @return List<TrainingTraineeReadDTO> a list of data transfer objects representing
      *         the trainings that match the criteria.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    List<TrainingTraineeReadDTO> getTrainingList(@Valid @NotNull LoginDTO loginDTO, @NotNull CriteriaTraineeDTO criteria) throws UserNotFoundException;
+    List<TrainingTraineeReadDTO> getTrainingList(@NotEmpty String username, @NotNull CriteriaTraineeDTO criteria) throws TraineeNotFoundException;
 
     /**
      * Retrieves a list of trainers that are not assigned to the Trainee.
      *
-     * @param loginDTO the data transfer object containing the username and password
-     *                 for authenticating the Trainee.
+     * @param username the username of the Trainee.
      * @return List<TrainerForTraineeProfileDTO> a list of data transfer objects representing
      *         the profiles of trainers that are not assigned to the Trainee.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
-    @Validated
-    List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(@Valid @NotNull LoginDTO loginDTO) throws UserNotFoundException;
+    List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(@NotEmpty String username) throws TraineeNotFoundException;
 
     /**
-     * Updates the list of assigned trainers for a Trainee based on login credentials.
+     * Updates the list of assigned trainers for a Trainee based on the username.
      *
-     * @param loginDTO the data transfer object containing the username and password
-     *                 for authenticating the Trainee.
+     * @param username            the username of the Trainee.
      * @param trainerNameDTOList the list of TrainerNameDTO containing the usernames of trainers
      *                           to be assigned to the Trainee.
      * @return List<TrainerForTraineeProfileDTO> a list of data transfer objects representing
-     *         the profiles of trainers assigned to the Trainee after update.
+     *         the profiles of trainers assigned to the Trainee after the update.
      * @throws TrainerNotFoundException if any of the specified trainers are not found.
-     * @throws UserNotFoundException if the Trainee is not found based on the provided credentials.
-     * @throws IllegalArgumentException if the Trainer list is empty.
+     * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
+     * @throws IllegalArgumentException if the trainer list is empty.
      */
-    @Validated
-    List<TrainerForTraineeProfileDTO> updateTrainerList(@Valid @NotNull LoginDTO loginDTO,@Valid @NotNull List<TrainerNameDTO> trainerNameDTOList) throws TrainerNotFoundException, UserNotFoundException, IllegalArgumentException;
+    List<TrainerForTraineeProfileDTO> updateTrainerList(@NotEmpty String username, @Valid @NotNull List<TrainerNameDTO> trainerNameDTOList)
+            throws TrainerNotFoundException, TraineeNotFoundException, IllegalArgumentException;
 
     /**
-     * Retrieves a Trainee entity based on the provided login credentials.
+     * Retrieves a Trainee entity based on the provided username.
      *
-     * @param dto the data transfer object containing the username and password
-     *            for authenticating the Trainee.
-     * @return Trainee the Trainee entity corresponding to the provided credentials.
-     * @throws UserNotFoundException if no Trainee is found with the provided credentials.
+     * @param username the username of the Trainee.
+     * @return Trainee the Trainee entity corresponding to the provided username.
+     * @throws TraineeNotFoundException if no Trainee is found with the provided username.
      */
-    @Validated
-    Trainee getTraineeByLogin(@Valid @NotNull LoginDTO dto) throws UserNotFoundException;
+    Trainee getTraineeByUsername(@NotEmpty String username) throws TraineeNotFoundException;
 }

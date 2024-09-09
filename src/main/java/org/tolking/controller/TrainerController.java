@@ -2,26 +2,23 @@ package org.tolking.controller;
 
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.tolking.dto.LoginDTO;
-import org.tolking.dto.LoginNewPassword;
+import org.tolking.dto.NewPassword;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
-import org.tolking.dto.trainer.TrainerCreateDTO;
 import org.tolking.dto.trainer.TrainerProfileDTO;
-import org.tolking.dto.trainer.TrainerUpdateRequest;
+import org.tolking.dto.trainer.TrainerUpdateDTO;
 import org.tolking.dto.training.TrainingTrainerReadDTO;
-import org.tolking.exception.ApiError;
 import org.tolking.service.TrainerService;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -36,72 +33,30 @@ public class TrainerController {
     public static final String CONTENT_TYPE = "application/json";
     private final TrainerService trainerService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create trainer", description = "Create operation for trainer.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Trainer is created successfully"),
-            @ApiResponse(responseCode = "400",
-                    description = ERROR_IN_VALIDATION,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
-
-    })
-    LoginDTO create(@RequestBody @Valid TrainerCreateDTO dto,
-                    BindingResult bindingResult) {
-        throwExceptionIfHasError(bindingResult);
-
-        return trainerService.create(dto);
-    }
-
-    @PostMapping("/profile")
+    @GetMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get trainer profile")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
-
     })
-    TrainerProfileDTO profile(@RequestBody @Valid LoginDTO loginDTO,
-                              BindingResult bindingResult) {
-        throwExceptionIfHasError(bindingResult);
+    TrainerProfileDTO profile(@NotNull Principal principal) {
 
-        return trainerService.getProfile(loginDTO);
-    }
-
-    @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Trainer login")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
-
-    })
-    void login(@RequestBody @Valid LoginDTO loginDTO,
-               BindingResult bindingResult) {
-        throwExceptionIfHasError(bindingResult);
-
-        trainerService.getProfile(loginDTO);
+        return trainerService.getProfile(principal.getName());
     }
 
     @PutMapping("/profile/changePassword")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainer profile change password")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = PASSWORD_HAS_BEEN_CHANGED),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "200", description = PASSWORD_HAS_BEEN_CHANGED)
 
     })
-    void changePassword(@RequestBody @Valid LoginNewPassword login,
-                        BindingResult bindingResult) {
-        throwExceptionIfHasError(bindingResult);
+    void changePassword(@NotNull Principal principal,
+                        @RequestBody @Valid NewPassword newPassword,
+                        BindingResult result) {
+        throwExceptionIfHasError(result);
 
-        trainerService.updatePassword(login);
+        trainerService.updatePassword(principal.getName(), newPassword.getPassword());
     }
 
     @PutMapping("/profile")
@@ -109,55 +64,41 @@ public class TrainerController {
     @Timed(value = "trainer_profile.time", description = "Time taken to update trainer's profile")
     @Operation(summary = "Trainer profile change profile")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = PROFILE_HAS_BEEN_CHANGED),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "200", description = PROFILE_HAS_BEEN_CHANGED)
 
     })
-    TrainerProfileDTO update(@RequestBody @Valid TrainerUpdateRequest updateRequest,
+    TrainerProfileDTO update(@NotNull Principal principal,
+                             @RequestBody @Valid TrainerUpdateDTO updateDto,
                              BindingResult bindingResult) {
         throwExceptionIfHasError(bindingResult);
 
-        return trainerService.update(updateRequest.getLogin(), updateRequest.getDto());
+        return trainerService.update(principal.getName(), updateDto);
     }
 
     @PatchMapping("/profile/toggleStatus")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainer profile toggle status")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = STATUS_HAS_BEEN_TOGGLED),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "200", description = STATUS_HAS_BEEN_TOGGLED)
 
     })
-    void toggleStatus(@RequestBody @Valid LoginDTO login,
-                      BindingResult bindingResult) {
-        throwExceptionIfHasError(bindingResult);
-
-        trainerService.toggleStatus(login);
+    void toggleStatus(@NotNull Principal principal) {
+        trainerService.toggleStatus(principal.getName());
     }
 
-    @PostMapping("/training/criteria")
+    @GetMapping("/training/criteria")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Trainer's training list by criteria")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = TRAINING_RETRIEVED),
-            @ApiResponse(responseCode = "401",
-                    description = CREDENTIALS_IS_INCORRECT,
-                    content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = ApiError.class))),
+            @ApiResponse(responseCode = "200", description = TRAINING_RETRIEVED)
 
     })
-    List<TrainingTrainerReadDTO> getTrainingList(@RequestBody @Valid LoginDTO loginDTO,
-                                                 BindingResult bindingResult,
+    List<TrainingTrainerReadDTO> getTrainingList(@NotNull Principal principal,
                                                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodFrom,
                                                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodTo,
                                                  @RequestParam(required = false) String traineeName) {
-        throwExceptionIfHasError(bindingResult);
-
         return trainerService.getTrainingList(
-                loginDTO,
+                principal.getName(),
                 CriteriaTrainerDTO.builder()
                         .from(periodFrom)
                         .to(periodTo)

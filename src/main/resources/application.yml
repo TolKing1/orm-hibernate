@@ -1,3 +1,5 @@
+
+
 spring:
   config:
     activate:
@@ -10,7 +12,7 @@ spring:
     sql-dialect:  org.hibernate.dialect.PostgreSQLDialect
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
 springdoc:
   api-docs:
@@ -28,6 +30,10 @@ management:
   endpoint:
     health:
       show-details: always
+
+token:
+  signing:
+    key: ${JWT_SIGNATURE_KEY}
 ---
 spring:
   config:
@@ -42,6 +48,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+token:
+  signing:
+    key: ${JWT_SIGNATURE_KEY}
 ---
 spring:
   config:
@@ -73,3 +83,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+token:
+  signing:
+    key: ${JWT_SIGNATURE_KEY}

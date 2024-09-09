@@ -2,9 +2,9 @@ package org.tolking.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tolking.dto.LoginDTO;
-import org.tolking.dto.LoginNewPassword;
 import org.tolking.dto.converter.DTOConverter;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
 import org.tolking.dto.trainer.*;
@@ -13,8 +13,8 @@ import org.tolking.entity.Trainee;
 import org.tolking.entity.Trainer;
 import org.tolking.entity.TrainingType;
 import org.tolking.entity.User;
+import org.tolking.enums.RoleType;
 import org.tolking.exception.TrainerNotFoundException;
-import org.tolking.exception.UserNotFoundException;
 import org.tolking.repository.TrainerRepository;
 import org.tolking.service.TrainingService;
 import org.tolking.service.TrainingTypeService;
@@ -34,6 +34,8 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
     private final TrainingTypeService trainingTypeService;
     private final TrainingService trainingService;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final DTOConverter<Trainer, TrainerCreateDTO> createConverter;
     private final DTOConverter<Trainer, TrainerProfileDTO> profileConverter;
     private final DTOConverter<Trainer, TrainerUpdateDTO> updateConverter;
@@ -47,13 +49,13 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
         User trainerUser = trainer.getUser();
 
         String serialUsername = generateUniqueUsername(trainerUser);
-        prepareUser(trainerUser, serialUsername);
+        String generatedPassword = prepareUserAndGetPassword(trainerUser, serialUsername);
 
         Trainer createdTrainer = saveTrainer(trainer);
         User createdTrainerUser = createdTrainer.getUser();
 
         log.info("Trainer created with username: {}", createdTrainerUser.getUsername());
-        return new LoginDTO(createdTrainerUser.getUsername(), createdTrainerUser.getPassword());
+        return new LoginDTO(createdTrainerUser.getUsername(), generatedPassword);
     }
 
     private TrainingType getTrainingType(Trainer trainer) {
@@ -68,9 +70,11 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
         return username;
     }
 
-    private void prepareUser(User user, String username) {
-        UserUtils.prepareUserForCreation(user, username);
+    private String prepareUserAndGetPassword(User user, String username) {
+        String password = UserUtils.prepareUserForCreation(user, passwordEncoder, username, RoleType.ROLE_TRAINER);
         log.debug("Prepared user with username: {}", username);
+
+        return password;
     }
 
     private Trainer saveTrainer(Trainer trainer) {
@@ -79,59 +83,56 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
     }
 
     @Override
-    public TrainerProfileDTO getProfile(LoginDTO dto) throws UserNotFoundException {
-        log.info("Fetching profile for user: {}", dto.getUsername());
-        Trainer trainer = getTrainerByLogin(dto);
+    public TrainerProfileDTO getProfile(String username) throws TrainerNotFoundException {
+        log.info("Fetching profile for user: {}", username);
+        Trainer trainer = this.getTrainerByUsername(username);
         return profileConverter.toDto(trainer);
     }
 
     @Override
-    public TrainerProfileDTO update(LoginDTO loginDTO, TrainerUpdateDTO trainerUpdateDTO) throws UserNotFoundException {
-        log.info("Updating trainer profile for user: {}", loginDTO.getUsername());
+    public TrainerProfileDTO update(String username, TrainerUpdateDTO trainerUpdateDTO) throws TrainerNotFoundException {
+        log.info("Updating trainer profile for user: {}", username);
 
-        Trainer trainer = getTrainerByLogin(loginDTO);
+        Trainer trainer = this.getTrainerByUsername(username);
         trainer = updateConverter.updateEntity(trainer, trainerUpdateDTO);
         Trainer updatedTrainer = trainerRepository.save(trainer);
 
-        log.info("Trainer profile updated for user: {}", loginDTO.getUsername());
+        log.info("Trainer profile updated for user: {}", username);
         return profileConverter.toDto(updatedTrainer);
 
     }
 
     @Override
-    public void updatePassword(LoginNewPassword dto) throws UserNotFoundException {
-        LoginDTO loginDTO = dto.getLoginDTO();
-        String username = loginDTO.getUsername();
-
+    public void updatePassword(String username, String newPassword) throws TrainerNotFoundException {
         log.info("Updating password for user: {}", username);
 
-        Trainer trainer = getTrainerByLogin(loginDTO);
-        trainer.getUser().setPassword(dto.getNewPassword());
+        Trainer trainer = this.getTrainerByUsername(username);
+        trainer.getUser().setPassword(passwordEncoder.encode(newPassword));
         trainerRepository.save(trainer);
 
         log.info("Password updated for user: {}", username);
     }
 
     @Override
-    public void toggleStatus(LoginDTO loginDTO) throws UserNotFoundException {
-        log.info("Toggling status for user: {}", loginDTO.getUsername());
-        Trainer trainer = getTrainerByLogin(loginDTO);
+    public void toggleStatus(String username) throws TrainerNotFoundException {
+        log.info("Toggling status for user: {}", username);
+        Trainer trainer = this.getTrainerByUsername(username);
         User user = trainer.getUser();
         UserUtils.toggleStatus(user);
         trainerRepository.save(trainer);
-        log.info("Status toggled for user: {}", loginDTO.getUsername());
+        log.info("Status toggled for user: {}", username);
     }
 
     @Override
-    public List<TrainingTrainerReadDTO> getTrainingList(LoginDTO loginDTO, CriteriaTrainerDTO criteria) {
-        log.info("Fetching training list for user: {} with criteria: {}", loginDTO.getUsername(), criteria);
-        Trainer trainer = getTrainerByLogin(loginDTO);
-        String username = trainer.getUser().getUsername();
-        return trainingService.getTrainerTrainingListByCriteria(username, criteria);
+    public List<TrainingTrainerReadDTO> getTrainingList(String username, CriteriaTrainerDTO criteria) throws TrainerNotFoundException {
+        log.info("Fetching training list for user: {} with criteria: {}", username, criteria);
+        Trainer trainer = this.getTrainerByUsername(username);
+        String givenUsername = trainer.getUser().getUsername();
+        return trainingService.getTrainerTrainingListByCriteria(givenUsername, criteria);
     }
 
     @Override
-    public List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(String traineeUsername) throws UserNotFoundException {
+    public List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(String traineeUsername) {
         log.info("Fetching not assigned trainers for trainee: {}", traineeUsername);
         List<Trainer> trainerList = trainerRepository.findTrainersByUser_IsActiveTrueAndTraineeList_User_UsernameIsNot(traineeUsername);
         return traineeProfileConverter.toDtoList(trainerList);
@@ -141,10 +142,12 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
     public List<Trainer> getTrainerListByUsernames(List<TrainerNameDTO> dtoList) throws TrainerNotFoundException {
         log.info("Fetching trainers for usernames: {}", dtoList);
         List<Trainer> trainerList = new ArrayList<>();
+
         dtoList.forEach(trainerNameDTO -> {
             Trainer trainer = getTrainerByUsername(trainerNameDTO.getUsername());
             trainerList.add(trainer);
         });
+
         return trainerList;
     }
 
@@ -170,11 +173,5 @@ public class TrainerServiceImpl implements org.tolking.service.TrainerService {
             traineeList.remove(trainee);
             trainerRepository.save(trainer);
         });
-    }
-
-    private Trainer getTrainerByLogin(LoginDTO dto) throws UserNotFoundException {
-        log.info("Fetching trainer by login: {}", dto);
-        return trainerRepository.getTrainerByUser_UsernameAndUser_Password(dto.getUsername(), dto.getPassword())
-                .orElseThrow(() -> new UserNotFoundException(dto.getUsername()));
     }
 }
