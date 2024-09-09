@@ -5,5 +5,5 @@ public interface BruteForceProtectionService {
 
     void loginFailed(String key);
 
-    boolean isBlocked(String key);
+    boolean isBlocked(String key, long lockTime);
 }

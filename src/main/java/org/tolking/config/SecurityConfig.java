@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/logout").permitAll()
                         .requestMatchers(HttpMethod.GET,"/training-type").permitAll()
                         .requestMatchers(HttpMethod.POST,"/trainee/register").permitAll()
                         .requestMatchers(HttpMethod.POST,"/trainer/register").permitAll()
@@ -51,7 +52,6 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
-                        .permitAll()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

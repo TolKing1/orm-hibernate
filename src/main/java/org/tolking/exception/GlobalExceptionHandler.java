@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         return handleException(e, request, UN_AUTH);
     }
 
-    @ExceptionHandler(LoginAttemptSucceedException.class)
+    @ExceptionHandler(LoginAttemptExceedException.class)
     public ResponseEntity<ApiError> handleBruteForce(Exception e, HttpServletRequest request) {
         return handleException(e, request, UN_AUTH);
     }

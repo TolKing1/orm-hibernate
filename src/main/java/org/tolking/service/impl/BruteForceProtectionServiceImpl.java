@@ -5,13 +5,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class BruteForceProtectionServiceImpl implements org.tolking.service.BruteForceProtectionService {
     private static final int MAX_ATTEMPT = 3;
-    private static final long LOCK_TIME = TimeUnit.MINUTES.toMillis(5);
 
     private final Map<String, Integer> attemptsCache = new ConcurrentHashMap<>();
     private final Map<String, Long> lockCache = new ConcurrentHashMap<>();
@@ -35,13 +33,13 @@ public class BruteForceProtectionServiceImpl implements org.tolking.service.Brut
     }
 
     @Override
-    public boolean isBlocked(String key) {
+    public boolean isBlocked(String key, long staticLockTime) {
         if (!lockCache.containsKey(key)) {
             return false;
         }
 
         long lockTime = lockCache.get(key);
-        if (System.currentTimeMillis() - lockTime > LOCK_TIME) {
+        if (System.currentTimeMillis() - lockTime > staticLockTime) {
             lockCache.remove(key);
             return false;
         }

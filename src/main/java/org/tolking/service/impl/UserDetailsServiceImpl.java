@@ -9,18 +9,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.tolking.dto.LoginDTO;
 import org.tolking.exception.BadLoginException;
-import org.tolking.exception.LoginAttemptSucceedException;
+import org.tolking.exception.LoginAttemptExceedException;
 import org.tolking.exception.UserNotFoundException;
 import org.tolking.repository.UserRepository;
 import org.tolking.service.BruteForceProtectionService;
 import org.tolking.service.JWTService;
 import org.tolking.service.UserDetailsService;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    public static final long LOCK_TIME = TimeUnit.MINUTES.toMinutes(5);
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JWTService jwtService;
@@ -34,12 +37,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public String signIn(LoginDTO loginDTO) throws BadLoginException, LoginAttemptSucceedException{
+    public String signIn(LoginDTO loginDTO) throws BadLoginException, LoginAttemptExceedException {
         String username = loginDTO.getUsername();
         log.debug("Try to login with username: {}", username);
 
-        if (bruteForceProtectionService.isBlocked(username)){
-            throw new LoginAttemptSucceedException();
+        if (bruteForceProtectionService.isBlocked(username, LOCK_TIME)){
+            throw new LoginAttemptExceedException();
         }
 
         try {
