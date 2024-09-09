@@ -8,6 +8,5 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class GymApplication {
     public static void main(String[] args) {
         SpringApplication.run(GymApplication.class);
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     }
 }

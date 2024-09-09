@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ApiError> handleInvalidDataException(InvalidDataException e, HttpServletRequest request) {
-        log(e);;
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException e, HttpServletRequest request) {
-        log(e);;
+        log(e);
 
         ApiError apiError = new ApiError(
                 request.getRequestURI(),

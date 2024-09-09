@@ -29,8 +29,6 @@ import static org.tolking.util.ControllerUtils.*;
 @RequestMapping("/trainer")
 @RequiredArgsConstructor
 public class TrainerController {
-
-    public static final String CONTENT_TYPE = "application/json";
     private final TrainerService trainerService;
 
     @GetMapping("/profile")

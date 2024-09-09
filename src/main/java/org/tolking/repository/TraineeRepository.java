@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface TraineeRepository extends CrudRepository<Trainee, Long> {
-    Optional<Trainee> getTraineeByUser_UsernameAndUser_Password(String username, String password);
     Optional<Trainee> getTraineeByUser_Username(String username);
 }
