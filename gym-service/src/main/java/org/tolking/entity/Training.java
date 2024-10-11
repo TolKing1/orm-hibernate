@@ -39,6 +39,9 @@ public class Training {
     @Positive
     private long duration;
 
+    private boolean isDeleted;
+
+    private Date deleteDate;
 
 
 }

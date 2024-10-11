@@ -10,6 +10,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  h2:
+    console:
+      enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
 
 eureka:
   client:
@@ -18,6 +28,22 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      event-service:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
 server:
   port: 8081
 
+logging:
+  level:
+    web: debug

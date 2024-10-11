@@ -12,6 +12,8 @@ import org.tolking.dto.training.TrainingTrainerReadDTO;
 import org.tolking.entity.Trainee;
 import org.tolking.exception.TraineeNotFoundException;
 import org.tolking.exception.TrainerNotFoundException;
+import org.tolking.exception.TrainingNotFoundException;
+import org.tolking.external_dto.TrainingEventDTO;
 
 import java.util.List;
 
@@ -45,7 +47,16 @@ public interface TrainingService {
      * @param dto the data transfer object containing the details of the training session to be created.
      * @throws TrainerNotFoundException if the Trainer specified in the DTO is not found.
      * @throws TraineeNotFoundException if the Trainee is not found.
+     * @return Created training
      */
     @Validated
-    void createTraining(@NotNull Trainee trainee, @NotNull @Valid TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException;
+    TrainingEventDTO createTraining(@NotNull Trainee trainee, @NotNull @Valid TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException;
+
+    /**
+     * Cancels an existing training session by its ID.
+     *
+     * @param id the ID of the training session to be canceled.
+     * @throws TrainingNotFoundException if the training session with the specified ID is not found.
+     */
+    TrainingEventDTO cancelTraining(String traineeUsername, long id) throws TrainingNotFoundException;
 }

@@ -1,5 +1,6 @@
 package org.tolking.controller;
 
+import feign.FeignException;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,10 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.tolking.controller.client.TrainingEventClient;
 import org.tolking.dto.NewPassword;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.trainee.TraineeProfileDTO;
@@ -22,8 +25,10 @@ import org.tolking.dto.trainer.TrainerNameDTO;
 import org.tolking.dto.training.TrainingDTO;
 import org.tolking.dto.training.TrainingTraineeReadDTO;
 import org.tolking.entity.Trainee;
+import org.tolking.enums.ActionType;
 import org.tolking.enums.TrainingsType;
 import org.tolking.exception.ApiError;
+import org.tolking.external_dto.TrainingEventDTO;
 import org.tolking.service.TraineeService;
 import org.tolking.service.TrainingService;
 
@@ -38,11 +43,14 @@ import static org.tolking.util.ControllerUtils.throwExceptionIfHasError;
 @RestController
 @RequestMapping("/trainee")
 @RequiredArgsConstructor
+@Slf4j
 public class TraineeController {
     public static final String CONTENT_TYPE = "application/json";
 
     private final TraineeService traineeService;
     private final TrainingService trainingService;
+
+    private final TrainingEventClient trainingEventClient;
 
 
     @GetMapping("/profile")
@@ -144,7 +152,35 @@ public class TraineeController {
         throwExceptionIfHasError(bindingResult);
 
         Trainee trainee = traineeService.getTraineeByUsername(principal.getName());
-        trainingService.createTraining(trainee, trainingDTO);
+        TrainingEventDTO createdTraining = getADDEventDTO(trainingDTO, trainee);
+
+        //Create event
+        try {
+            trainingEventClient.createEvent(createdTraining);
+        } catch (FeignException.FeignClientException e) {
+            log.warn("Tracking service is not available");
+        }
+    }
+
+    private TrainingEventDTO getADDEventDTO(TrainingDTO trainingDTO, Trainee trainee) {
+        TrainingEventDTO createdTraining = trainingService.createTraining(trainee, trainingDTO);
+        createdTraining.setActionType(ActionType.ADD);
+        return createdTraining;
+    }
+
+    @DeleteMapping("/training")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Cancel Training", description = "Cancels a training")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Training deleted successfully"),
+    })
+    public void cancelTraining(@NotNull Principal principal,
+                            @RequestBody long trainingId,
+                            BindingResult bindingResult) {
+        throwExceptionIfHasError(bindingResult);
+
+        Trainee trainee = traineeService.getTraineeByUsername(principal.getName());
+        trainingService.cancelTraining(trainee.getUser().getUsername(), trainingId);
     }
 
     @GetMapping("/trainer/not-assigned")

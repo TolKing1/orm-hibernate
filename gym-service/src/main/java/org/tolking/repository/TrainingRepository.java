@@ -9,11 +9,12 @@ import org.tolking.enums.TrainingsType;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TrainingRepository extends CrudRepository<Training, Long> {
 /**
- * Finds a list of training sessions based on the specified criteria.
+ * Finds a list of training sessions based on the specified criteria and training that is not deleted.
  *
  * @param username      the username of the trainer whose trainings are to be fetched (required).
  * @param periodFrom    the start date from which to filter trainings (optional). If null, no lower bound is applied.
@@ -26,6 +27,7 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
  */
     @Query("SELECT t FROM Training t " +
             "WHERE t.trainer.user.username = :username " +
+            "AND ( t.isDeleted = false ) " +
             "AND ( CAST(CAST(:periodFrom as string ) as timestamp) IS NULL OR t.date >= :periodFrom ) " +
             "AND ( CAST(CAST(:periodTo as string ) as timestamp) IS NULL OR t.date <= :periodTo ) " +
             "AND ( :traineeName IS NULL OR t.trainee.user.username = :traineeName)")
@@ -36,7 +38,7 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
 
 
 /**
- * Finds a list of trainings for a specific trainee based on various criteria.
+ * Finds a list of trainings for a specific trainee based on various criteria and training that is not deleted.
  *
  * @param username The username of the trainee. Cannot be null.
  * @param periodFrom The start date of the period to filter trainings. Can be null to include all dates before.
@@ -47,6 +49,7 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
  */
     @Query("SELECT t FROM Training t " +
             "WHERE t.trainee.user.username = :username " +
+            "AND ( t.isDeleted = false ) " +
             "AND (CAST(CAST(:periodFrom as string ) as timestamp) IS NULL OR t.date >= :periodFrom) " +
             "AND (CAST(CAST(:periodTo as string ) as timestamp) IS NULL OR t.date <= :periodTo) " +
             "AND (:trainerName IS NULL OR t.trainer.user.username = :trainerName)" +
@@ -56,5 +59,7 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
                                                   @Param("periodTo") Date periodTo,
                                                   @Param("trainerName") String trainerName,
                                                   @Param("trainingsType") TrainingsType trainingsType);
+
+    Optional<Training> findTrainingByTraineeUserUsernameAndId(String traineeUserUsername, long id);
 
 }

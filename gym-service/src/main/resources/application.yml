@@ -14,6 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
 
+
 springdoc:
   api-docs:
     enabled: true
@@ -41,6 +42,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
+logging:
+  level:
+    web: debug
 ---
 spring:
   config:

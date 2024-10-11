@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class TrainingTraineeReadDTO {
+    private long id;
     @JsonProperty("traineeUsername")
     private String trainerUserUsername;
     private String trainingName;
