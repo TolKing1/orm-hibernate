@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: training-tracker-service
+  datasource:
+    url: jdbc:h2:mem:gym-club
+    username: test
+    password: test
+  jooq:
+    sql-dialect: org.hibernate.dialect.H2Dialect
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+server:
+  port: 8081
+
