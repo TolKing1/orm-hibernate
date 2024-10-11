@@ -14,6 +14,23 @@ spring:
     hibernate:
       ddl-auto: update
 
+token:
+  signing:
+    key: ${JWT_SIGNATURE_KEY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
 
 springdoc:
   api-docs:
@@ -32,19 +49,8 @@ management:
     health:
       show-details: always
 
-token:
-  signing:
-    key: ${JWT_SIGNATURE_KEY}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true
-logging:
-  level:
-    web: debug
+
 ---
 spring:
   config:

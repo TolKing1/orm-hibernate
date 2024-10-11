@@ -162,6 +162,8 @@ public class TraineeController {
         }
     }
 
+
+
     private TrainingEventDTO getADDEventDTO(TrainingDTO trainingDTO, Trainee trainee) {
         TrainingEventDTO createdTraining = trainingService.createTraining(trainee, trainingDTO);
         createdTraining.setActionType(ActionType.ADD);
