@@ -87,7 +87,7 @@ class TrainingEventServiceImplTest {
 
         List<TrainingEvent> trainingEvents = Arrays.asList(trainingEvent1, trainingEvent2);
 
-        when(trainerRepository.findAllByActionType(ActionType.ADD)).thenReturn(trainingEvents);
+        when(trainerRepository.findAllAddEventsWithoutDelete()).thenReturn(trainingEvents);
 
         List<TrainerSummary> summaries = trainingEventService.getAllSummary();
 
@@ -102,7 +102,7 @@ class TrainingEventServiceImplTest {
         assertEquals("John", summary1.getFirstName());
         assertEquals("Jane", summary2.getFirstName());
 
-        verify(trainerRepository, times(1)).findAllByActionType(ActionType.ADD);
+        verify(trainerRepository, times(1)).findAllAddEventsWithoutDelete();
     }
 
 
