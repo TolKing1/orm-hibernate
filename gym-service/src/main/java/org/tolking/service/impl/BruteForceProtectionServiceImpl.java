@@ -2,13 +2,14 @@ package org.tolking.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tolking.service.BruteForceProtectionService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
-public class BruteForceProtectionServiceImpl implements org.tolking.service.BruteForceProtectionService {
+public class BruteForceProtectionServiceImpl implements BruteForceProtectionService {
     private static final int MAX_ATTEMPT = 3;
 
     private final Map<String, Integer> attemptsCache = new ConcurrentHashMap<>();

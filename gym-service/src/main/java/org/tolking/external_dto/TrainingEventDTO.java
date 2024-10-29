@@ -16,6 +16,8 @@ public class TrainingEventDTO {
     private String trainerUserLastName;
     @JsonProperty("isActive")
     private boolean trainerUserIsActive;
+    @JsonProperty("trainingId")
+    private Long id;
     @JsonProperty("trainingDate")
     private Date date;
     @JsonProperty("trainingDuration")

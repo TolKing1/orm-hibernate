@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
     }
 
     private static void log(Throwable exception) {
-        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage());
+        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage(), exception);
     }
 
 

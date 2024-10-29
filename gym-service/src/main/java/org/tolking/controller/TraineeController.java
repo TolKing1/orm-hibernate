@@ -1,6 +1,5 @@
 package org.tolking.controller;
 
-import feign.FeignException;
 import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,8 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.tolking.controller.client.TrainingEventClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.tolking.dto.NewPassword;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.trainee.TraineeProfileDTO;
@@ -25,10 +31,8 @@ import org.tolking.dto.trainer.TrainerNameDTO;
 import org.tolking.dto.training.TrainingDTO;
 import org.tolking.dto.training.TrainingTraineeReadDTO;
 import org.tolking.entity.Trainee;
-import org.tolking.enums.ActionType;
 import org.tolking.enums.TrainingsType;
 import org.tolking.exception.ApiError;
-import org.tolking.external_dto.TrainingEventDTO;
 import org.tolking.service.TraineeService;
 import org.tolking.service.TrainingService;
 
@@ -38,7 +42,6 @@ import java.util.List;
 
 import static org.tolking.util.ControllerUtils.ERROR_IN_VALIDATION;
 import static org.tolking.util.ControllerUtils.throwExceptionIfHasError;
-
 
 @RestController
 @RequestMapping("/trainee")
@@ -50,7 +53,6 @@ public class TraineeController {
     private final TraineeService traineeService;
     private final TrainingService trainingService;
 
-    private final TrainingEventClient trainingEventClient;
 
 
     @GetMapping("/profile")
@@ -138,8 +140,8 @@ public class TraineeController {
         );
     }
 
-    @PostMapping("/training")
-    @ResponseStatus(HttpStatus.OK)
+    @org.springframework.web.bind.annotation.PostMapping("/training")
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Add Training", description = "Adds a training to the trainee's profile.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Training added successfully"),
@@ -152,26 +154,14 @@ public class TraineeController {
         throwExceptionIfHasError(bindingResult);
 
         Trainee trainee = traineeService.getTraineeByUsername(principal.getName());
-        TrainingEventDTO createdTraining = getADDEventDTO(trainingDTO, trainee);
-
-        //Create event
-        try {
-            trainingEventClient.createEvent(createdTraining);
-        } catch (FeignException.FeignClientException e) {
-            log.warn("Tracking service is not available");
-        }
+        trainingService.createTraining(trainee, trainingDTO);
     }
 
 
 
-    private TrainingEventDTO getADDEventDTO(TrainingDTO trainingDTO, Trainee trainee) {
-        TrainingEventDTO createdTraining = trainingService.createTraining(trainee, trainingDTO);
-        createdTraining.setActionType(ActionType.ADD);
-        return createdTraining;
-    }
 
-    @DeleteMapping("/training")
-    @ResponseStatus(HttpStatus.OK)
+    @org.springframework.web.bind.annotation.DeleteMapping("/training")
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Cancel Training", description = "Cancels a training")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Training deleted successfully"),
@@ -185,8 +175,8 @@ public class TraineeController {
         trainingService.cancelTraining(trainee.getUser().getUsername(), trainingId);
     }
 
-    @GetMapping("/trainer/not-assigned")
-    @ResponseStatus(HttpStatus.OK)
+    @org.springframework.web.bind.annotation.GetMapping("/trainer/not-assigned")
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Not Assigned Trainers", description = "Retrieves a list of trainers that are not assigned to the trainee and have an active status.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Trainer list retrieved successfully",
@@ -196,8 +186,8 @@ public class TraineeController {
         return traineeService.getNotAssignedTrainers(principal.getName());
     }
 
-    @PutMapping("/trainer")
-    @ResponseStatus(HttpStatus.OK)
+    @org.springframework.web.bind.annotation.PutMapping("/trainer")
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update Trainer List", description = "Updates the list of trainers assigned to the trainee.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Trainer list updated successfully",

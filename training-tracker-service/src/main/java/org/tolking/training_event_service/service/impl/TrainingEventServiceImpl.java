@@ -6,14 +6,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.tolking.training_event_service.dto.TrainingEventDTO;
 import org.tolking.training_event_service.entity.TrainingEvent;
-import org.tolking.training_event_service.enums.ActionType;
 import org.tolking.training_event_service.model.TrainerSummary;
 import org.tolking.training_event_service.repository.TrainerRepository;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class TrainingEventServiceImpl implements org.tolking.training_event_serv
     public List<TrainerSummary> getAllSummary() {
         log.debug("Fetching summary of event");
 
-        List<TrainingEvent> trainingEvents = trainerRepository.findAllByActionType(ActionType.ADD);
+        List<TrainingEvent> trainingEvents = trainerRepository.findAllAddEventsWithoutDelete();
 
         Map<String, TrainerSummary> summaryMap = new HashMap<>();
 

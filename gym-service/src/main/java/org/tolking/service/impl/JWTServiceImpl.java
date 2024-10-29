@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.tolking.entity.User;
+import org.tolking.service.JWTService;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 
 @Service
 @Slf4j
-public class JWTServiceImpl implements org.tolking.service.JWTService {
+public class JWTServiceImpl implements JWTService {
     private final String jwtSigningKey;
 
     public JWTServiceImpl() {

@@ -16,6 +16,7 @@ import org.tolking.entity.User;
 import org.tolking.enums.RoleType;
 import org.tolking.exception.TrainerNotFoundException;
 import org.tolking.repository.TrainerRepository;
+import org.tolking.service.TrainerService;
 import org.tolking.service.TrainingService;
 import org.tolking.service.TrainingTypeService;
 import org.tolking.service.UserService;
@@ -27,7 +28,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TrainerServiceImpl implements org.tolking.service.TrainerService {
+public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
 
     private final UserService userService;

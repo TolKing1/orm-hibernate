@@ -10,7 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.tolking.dto.NewPassword;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
 import org.tolking.dto.trainer.TrainerProfileDTO;
@@ -22,7 +29,11 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
-import static org.tolking.util.ControllerUtils.*;
+import static org.tolking.util.ControllerUtils.PASSWORD_HAS_BEEN_CHANGED;
+import static org.tolking.util.ControllerUtils.PROFILE_HAS_BEEN_CHANGED;
+import static org.tolking.util.ControllerUtils.STATUS_HAS_BEEN_TOGGLED;
+import static org.tolking.util.ControllerUtils.TRAINING_RETRIEVED;
+import static org.tolking.util.ControllerUtils.throwExceptionIfHasError;
 
 
 @RestController

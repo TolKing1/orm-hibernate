@@ -17,6 +17,7 @@ public class TrainingEvent {
     private String firstName;
     private String lastName;
     private boolean isActive;
+    private Long trainingId;
     @Column(nullable = false)
     private Date trainingDate;
     private int trainingDuration;

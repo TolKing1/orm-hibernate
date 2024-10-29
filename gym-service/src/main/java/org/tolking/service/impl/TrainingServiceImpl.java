@@ -1,9 +1,11 @@
 package org.tolking.service.impl;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.tolking.controller.client.TrainingEventClient;
 import org.tolking.dto.converter.DTOConverter;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
@@ -13,22 +15,25 @@ import org.tolking.dto.training.TrainingTrainerReadDTO;
 import org.tolking.entity.Trainee;
 import org.tolking.entity.Trainer;
 import org.tolking.entity.Training;
+import org.tolking.enums.ActionType;
 import org.tolking.exception.TraineeNotFoundException;
 import org.tolking.exception.TrainerNotFoundException;
 import org.tolking.exception.TrainingNotFoundException;
 import org.tolking.external_dto.TrainingEventDTO;
 import org.tolking.repository.TrainingRepository;
 import org.tolking.service.TrainerService;
+import org.tolking.service.TrainingService;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
 @Slf4j
-public class TrainingServiceImpl implements org.tolking.service.TrainingService {
+public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
 
     private final TrainerService trainerService;
+    private final TrainingEventClient trainingEventClient;
 
     private final DTOConverter<Training, TrainingTraineeReadDTO> readTraineeConverter;
     private final DTOConverter<Training, TrainingTrainerReadDTO> readTrainerConverter;
@@ -38,12 +43,14 @@ public class TrainingServiceImpl implements org.tolking.service.TrainingService 
                                @Lazy TrainerService trainerService,
                                DTOConverter<Training, TrainingTraineeReadDTO> readTraineeConverter,
                                DTOConverter<Training, TrainingTrainerReadDTO> readTrainerConverter,
-                               ModelMapper modelMapper) {
+                               ModelMapper modelMapper,
+                               TrainingEventClient trainingEventClient) {
         this.trainingRepository = trainingRepository;
         this.trainerService = trainerService;
         this.readTraineeConverter = readTraineeConverter;
         this.readTrainerConverter = readTrainerConverter;
         this.modelMapper = modelMapper;
+        this.trainingEventClient = trainingEventClient;
     }
 
     @Override
@@ -95,7 +102,12 @@ public class TrainingServiceImpl implements org.tolking.service.TrainingService 
 
         log.debug("Training created successfully with ID: {}", createdTraining.getId());
 
-        return modelMapper.map(createdTraining,TrainingEventDTO.class);
+        TrainingEventDTO trainingEventDTO = modelMapper.map(createdTraining, TrainingEventDTO.class);
+
+        //Create event
+        createTrackerEvent(trainingEventDTO, ActionType.ADD);
+
+        return trainingEventDTO;
     }
 
     @Override
@@ -112,6 +124,21 @@ public class TrainingServiceImpl implements org.tolking.service.TrainingService 
 
         log.debug("Training cancelled successfully with ID: {}", id);
 
-        return modelMapper.map(updatedTraining, TrainingEventDTO.class);
+        TrainingEventDTO trainingEventDTO = modelMapper.map(updatedTraining, TrainingEventDTO.class);
+
+        //Create event
+        createTrackerEvent(trainingEventDTO, ActionType.DELETE);
+
+        return trainingEventDTO;
+    }
+
+    private void createTrackerEvent(TrainingEventDTO createdTraining, ActionType actionType) {
+        try {
+            createdTraining.setActionType(actionType);
+
+            trainingEventClient.createEvent(createdTraining);
+        } catch (FeignException.FeignClientException e) {
+            log.warn("Tracking service is not available");
+        }
     }
 }
