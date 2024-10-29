@@ -32,6 +32,7 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
+    private final MeterRegistry meterRegistry;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
@@ -42,8 +43,6 @@ public class AuthController {
     public String login(@RequestBody LoginDTO loginDTO) {
         return userDetailsService.signIn(loginDTO);
     }
-
-    private final MeterRegistry meterRegistry;
 
     @PostMapping("/trainee/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,7 +74,7 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "Trainer is created successfully"),
             @ApiResponse(responseCode = "400",
                     description = ERROR_IN_VALIDATION,
-                    content = @Content( schema = @Schema(implementation = ApiError.class))),
+                    content = @Content(schema = @Schema(implementation = ApiError.class))),
 
     })
     LoginDTO create(@RequestBody @Valid TrainerCreateDTO dto,

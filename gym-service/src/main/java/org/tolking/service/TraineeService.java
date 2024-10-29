@@ -42,7 +42,7 @@ public interface TraineeService {
     /**
      * Updates the password for a Trainee based on the username and new password.
      *
-     * @param username   the username of the Trainee.
+     * @param username    the username of the Trainee.
      * @param newPassword the new password for the Trainee.
      * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
@@ -52,7 +52,7 @@ public interface TraineeService {
      * Updates the Trainee's information based on the username and the provided
      * TraineeUpdateDTO.
      *
-     * @param username the username of the Trainee.
+     * @param username         the username of the Trainee.
      * @param traineeUpdateDTO the data transfer object containing the updated information
      *                         for the Trainee.
      * @return TraineeProfileDTO representing the updated Trainee's profile.
@@ -83,7 +83,7 @@ public interface TraineeService {
      * @param username the username of the Trainee.
      * @param criteria the criteria for filtering the list of trainings.
      * @return List<TrainingTraineeReadDTO> a list of data transfer objects representing
-     *         the trainings that match the criteria.
+     * the trainings that match the criteria.
      * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
     List<TrainingTraineeReadDTO> getTrainingList(@NotEmpty String username, @NotNull CriteriaTraineeDTO criteria) throws TraineeNotFoundException;
@@ -93,7 +93,7 @@ public interface TraineeService {
      *
      * @param username the username of the Trainee.
      * @return List<TrainerForTraineeProfileDTO> a list of data transfer objects representing
-     *         the profiles of trainers that are not assigned to the Trainee.
+     * the profiles of trainers that are not assigned to the Trainee.
      * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      */
     List<TrainerForTraineeProfileDTO> getNotAssignedTrainers(@NotEmpty String username) throws TraineeNotFoundException;
@@ -101,11 +101,11 @@ public interface TraineeService {
     /**
      * Updates the list of assigned trainers for a Trainee based on the username.
      *
-     * @param username            the username of the Trainee.
+     * @param username           the username of the Trainee.
      * @param trainerNameDTOList the list of TrainerNameDTO containing the usernames of trainers
      *                           to be assigned to the Trainee.
      * @return List<TrainerForTraineeProfileDTO> a list of data transfer objects representing
-     *         the profiles of trainers assigned to the Trainee after the update.
+     * the profiles of trainers assigned to the Trainee after the update.
      * @throws TrainerNotFoundException if any of the specified trainers are not found.
      * @throws TraineeNotFoundException if the Trainee is not found based on the provided username.
      * @throws IllegalArgumentException if the trainer list is empty.

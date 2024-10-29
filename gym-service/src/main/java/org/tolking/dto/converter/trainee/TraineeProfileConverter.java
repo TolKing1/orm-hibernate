@@ -12,7 +12,7 @@ public class TraineeProfileConverter extends DTOConverter<Trainee, TraineeProfil
         super(modelMapper);
     }
 
-    public Trainee updateEntity(Trainee trainee, TraineeProfileDTO trainerDTO){
+    public Trainee updateEntity(Trainee trainee, TraineeProfileDTO trainerDTO) {
         modelMapper.map(trainerDTO, trainee);
 
         return trainee;

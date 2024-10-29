@@ -6,7 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import org.tolking.dto.LoginDTO;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
-import org.tolking.dto.trainer.*;
+import org.tolking.dto.trainer.TrainerCreateDTO;
+import org.tolking.dto.trainer.TrainerForTraineeProfileDTO;
+import org.tolking.dto.trainer.TrainerNameDTO;
+import org.tolking.dto.trainer.TrainerProfileDTO;
+import org.tolking.dto.trainer.TrainerUpdateDTO;
 import org.tolking.dto.training.TrainingTrainerReadDTO;
 import org.tolking.entity.Trainee;
 import org.tolking.entity.Trainer;
@@ -40,9 +44,9 @@ public interface TrainerService {
     /**
      * Updates the Trainer's information based on the provided username and TrainerUpdateDTO.
      *
-     * @param username          the username of the Trainer.
-     * @param trainerUpdateDTO  the data transfer object containing the updated information
-     *                          for the Trainer.
+     * @param username         the username of the Trainer.
+     * @param trainerUpdateDTO the data transfer object containing the updated information
+     *                         for the Trainer.
      * @return TrainerProfileDTO representing the updated Trainer's profile.
      * @throws TrainerNotFoundException if the Trainer is not found based on the provided username.
      */
@@ -84,7 +88,7 @@ public interface TrainerService {
      *
      * @param traineeUsername the username of the Trainee.
      * @return List of TrainerForTraineeProfileDTO representing the profiles of trainers
-     *         that are not assigned to the Trainee.
+     * that are not assigned to the Trainee.
      * @throws TrainerNotFoundException if the Trainee is not found based on the provided username.
      */
     @Validated

@@ -15,7 +15,7 @@ public class TrainerForTraineeProfileDTO {
     private String userUsername;
     @JsonProperty("firstName")
     private String userFirstName;
-    @JsonProperty( "lastName")
+    @JsonProperty("lastName")
     private String userLastName;
     private String trainingTypeName;
 }

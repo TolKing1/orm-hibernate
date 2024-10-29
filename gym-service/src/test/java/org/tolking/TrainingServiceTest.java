@@ -12,7 +12,11 @@ import org.tolking.dto.criteria.CriteriaTrainerDTO;
 import org.tolking.dto.training.TrainingDTO;
 import org.tolking.dto.training.TrainingTraineeReadDTO;
 import org.tolking.dto.training.TrainingTrainerReadDTO;
-import org.tolking.entity.*;
+import org.tolking.entity.Trainee;
+import org.tolking.entity.Trainer;
+import org.tolking.entity.Training;
+import org.tolking.entity.TrainingType;
+import org.tolking.entity.User;
 import org.tolking.exception.TrainerNotFoundException;
 import org.tolking.repository.TrainingRepository;
 import org.tolking.service.TrainerService;
@@ -23,7 +27,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TrainingServiceTest {
@@ -99,7 +108,7 @@ public class TrainingServiceTest {
 
         List<TrainingTraineeReadDTO> result = trainingService.getTraineeTrainingListByCriteria(trainee.getUser().getUsername(), criteriaTraineeDTO);
 
-        assertNotNull( result);
+        assertNotNull(result);
         verify(trainingRepository, times(1)).findTraineeTrainingsByCriteria(anyString(), any(), any(), anyString(), any());
     }
 

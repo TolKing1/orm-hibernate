@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TrainingTypeRepository extends CrudRepository<TrainingType, Integer> {
     Optional<TrainingType> getTrainingTypeByName(TrainingsType name);
+
     List<TrainingType> getAllBy();
 }

@@ -18,10 +18,15 @@ public class GlobalExceptionHandler {
     public static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
     public static final HttpStatus INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
 
+    private static void log(Throwable exception) {
+        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage());
+    }
+
     @ExceptionHandler(TimeoutException.class)
-    public ResponseEntity<ApiError> handleTimeoutException(TimeoutException ex, HttpServletRequest request){
+    public ResponseEntity<ApiError> handleTimeoutException(TimeoutException ex, HttpServletRequest request) {
         return handleException(ex, request, HttpStatus.REQUEST_TIMEOUT);
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(Exception e, HttpServletRequest request) {
         return handleException(e, request, BAD_REQUEST);
@@ -41,6 +46,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorWithoutMessage> handleGenericException(Exception e, HttpServletRequest request) {
         return handleGenericException(e, request, INTERNAL_SERVER_ERROR);
     }
+
     private ResponseEntity<ApiError> handleException(Exception e, HttpServletRequest request, HttpStatus status) {
         log(e);
 
@@ -62,10 +68,6 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiError, status);
-    }
-
-    private static void log(Throwable exception) {
-        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage());
     }
 
 

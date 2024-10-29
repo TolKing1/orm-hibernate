@@ -31,26 +31,26 @@ public class BruteForceProtectionTest {
         bruteForceProtectionService.loginFailed(USERNAME);
         bruteForceProtectionService.loginFailed(USERNAME);
 
-        assertTrue(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertTrue(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
 
         bruteForceProtectionService.loginSucceeded(USERNAME);
 
-        assertFalse(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertFalse(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
     }
 
     @Test
     public void loginFailed_ShouldIncreaseAttempts() {
 
-        assertFalse(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertFalse(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
 
         bruteForceProtectionService.loginFailed(USERNAME);
-        assertFalse(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertFalse(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
 
         bruteForceProtectionService.loginFailed(USERNAME);
-        assertFalse(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertFalse(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
 
         bruteForceProtectionService.loginFailed(USERNAME);
-        assertTrue(bruteForceProtectionService.isBlocked(USERNAME,LONG_LOCK_TIME));
+        assertTrue(bruteForceProtectionService.isBlocked(USERNAME, LONG_LOCK_TIME));
     }
 
     @Test

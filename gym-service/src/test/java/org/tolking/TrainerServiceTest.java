@@ -9,7 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.tolking.dto.converter.DTOConverter;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
-import org.tolking.dto.trainer.*;
+import org.tolking.dto.trainer.TrainerCreateDTO;
+import org.tolking.dto.trainer.TrainerForTraineeProfileDTO;
+import org.tolking.dto.trainer.TrainerNameDTO;
+import org.tolking.dto.trainer.TrainerProfileDTO;
+import org.tolking.dto.trainer.TrainerUpdateDTO;
 import org.tolking.dto.training.TrainingTrainerReadDTO;
 import org.tolking.entity.Trainee;
 import org.tolking.entity.Trainer;
@@ -26,8 +30,17 @@ import org.tolking.service.impl.TrainerServiceImpl;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TrainerServiceTest {
@@ -190,7 +203,7 @@ public class TrainerServiceTest {
         when(trainerRepository.getTrainerByUser_Username(trainerUsername))
                 .thenReturn(Optional.empty());
 
-        assertThrows(TrainerNotFoundException.class, () -> trainerService.updatePassword(trainerUsername,loginNewPassword));
+        assertThrows(TrainerNotFoundException.class, () -> trainerService.updatePassword(trainerUsername, loginNewPassword));
         verify(trainerRepository, times(1))
                 .getTrainerByUser_Username(trainerUsername);
     }
@@ -299,6 +312,6 @@ public class TrainerServiceTest {
     void remove_associations() {
         trainerService.removeTraineeAssociation(trainee);
 
-        verify(trainerRepository,times(1)).save(trainer);
+        verify(trainerRepository, times(1)).save(trainer);
     }
 }

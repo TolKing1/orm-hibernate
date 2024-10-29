@@ -18,12 +18,12 @@ import java.util.Date;
 public class TraineeCreateDTO {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("firstName")
-    @Size(min = 3, max = 50 , message = "FirstName's length should be between 3 and 50")
+    @Size(min = 3, max = 50, message = "FirstName's length should be between 3 and 50")
     private String userFirstName;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lastName")
-    @Size(min = 3, max = 50 , message = "LastName's length should be between 3 and 50")
+    @Size(min = 3, max = 50, message = "LastName's length should be between 3 and 50")
     private String userLastName;
 
     private Date dateOfBirth;

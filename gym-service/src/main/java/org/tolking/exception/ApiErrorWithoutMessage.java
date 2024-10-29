@@ -6,4 +6,5 @@ public record ApiErrorWithoutMessage(
         String path,
         String status,
         LocalDateTime localDateTime
-){}
+) {
+}

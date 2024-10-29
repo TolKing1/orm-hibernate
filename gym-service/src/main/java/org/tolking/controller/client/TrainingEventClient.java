@@ -7,7 +7,7 @@ import org.tolking.config.FeignClientConfig;
 import org.tolking.external_dto.TrainingEventDTO;
 
 @FeignClient(name = "training-tracker-service", configuration = FeignClientConfig.class)
-public interface TrainingEventClient{
+public interface TrainingEventClient {
     @RequestMapping("/event")
     void createEvent(@RequestBody TrainingEventDTO trainingEventDTO);
 }

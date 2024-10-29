@@ -21,11 +21,12 @@ public class UserUtils {
 
         return alphaNumericString;
     }
-    public String getUsername(User user){
+
+    public String getUsername(User user) {
         return user.getFirstName() + "." + user.getLastName();
     }
 
-    public void toggleStatus(User user){
+    public void toggleStatus(User user) {
         user.setIsActive(!user.getIsActive());
     }
 }

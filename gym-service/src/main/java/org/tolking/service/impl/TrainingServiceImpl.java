@@ -111,11 +111,11 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public TrainingEventDTO cancelTraining(String traineeUsername, long id) throws TrainingNotFoundException{
+    public TrainingEventDTO cancelTraining(String traineeUsername, long id) throws TrainingNotFoundException {
         log.debug("Cancelling training with id: {}", id);
 
         Training training = trainingRepository.findTrainingByTraineeUserUsernameAndId(traineeUsername, id)
-                .orElseThrow(()-> new TrainingNotFoundException(id));
+                .orElseThrow(() -> new TrainingNotFoundException(id));
 
         training.setDeleted(true);
         training.setDeleteDate(new Date());

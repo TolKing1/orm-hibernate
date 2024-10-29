@@ -54,7 +54,6 @@ public class TraineeController {
     private final TrainingService trainingService;
 
 
-
     @GetMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get Trainee Profile", description = "Retrieves the profile details of the trainee.")
@@ -125,12 +124,12 @@ public class TraineeController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = TrainingTraineeReadDTO.class))),
     })
     public List<TrainingTraineeReadDTO> getTrainingList(@NotNull Principal principal,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodFrom,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodTo,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodFrom,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodTo,
                                                         @RequestParam(required = false) String trainerName,
                                                         @RequestParam(required = false) TrainingsType trainingType) {
         return traineeService.getTrainingList(
-                        principal.getName(),
+                principal.getName(),
                 CriteriaTraineeDTO.builder()
                         .from(periodFrom)
                         .to(periodTo)
@@ -158,8 +157,6 @@ public class TraineeController {
     }
 
 
-
-
     @org.springframework.web.bind.annotation.DeleteMapping("/training")
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Cancel Training", description = "Cancels a training")
@@ -167,8 +164,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "200", description = "Training deleted successfully"),
     })
     public void cancelTraining(@NotNull Principal principal,
-                            @RequestBody long trainingId,
-                            BindingResult bindingResult) {
+                               @RequestBody long trainingId,
+                               BindingResult bindingResult) {
         throwExceptionIfHasError(bindingResult);
 
         Trainee trainee = traineeService.getTraineeByUsername(principal.getName());

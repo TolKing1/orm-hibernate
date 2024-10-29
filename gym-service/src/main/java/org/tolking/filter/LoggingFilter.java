@@ -1,6 +1,10 @@
 package org.tolking.filter;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,15 @@ public class LoggingFilter implements Filter {
 
     private static final String CORRELATION_ID = "X-Correlation-Id";
 
+    private static String getIdOrGenerate(HttpServletRequest httpRequest) {
+        String id = httpRequest.getHeader(CORRELATION_ID);
+
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+        return id;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -28,16 +41,6 @@ public class LoggingFilter implements Filter {
         chain.doFilter(request, response);
         logResponse(httpResponse);
     }
-
-    private static String getIdOrGenerate(HttpServletRequest httpRequest) {
-        String id = httpRequest.getHeader(CORRELATION_ID);
-
-        if (id == null){
-            id = UUID.randomUUID().toString();
-        }
-        return id;
-    }
-
 
     private void logRequest(HttpServletRequest request) {
         // Log request details

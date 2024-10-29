@@ -25,8 +25,20 @@ public class TrainingEventServiceImpl implements org.tolking.training_event_serv
     private final TrainerRepository trainerRepository;
     private final ModelMapper modelMapper;
 
+    private static void addTrainingToMap(TrainingEvent trainingEvent, TrainerSummary summary, YearMonth yearMonth, Map<String, TrainerSummary> summaryMap, String username) {
+        summary.addTrainingDuration(yearMonth.getYear(), yearMonth.getMonthValue(), trainingEvent.getTrainingDuration());
+
+        summaryMap.put(username, summary);
+    }
+
+    private static YearMonth getYearMonth(TrainingEvent trainingEvent) {
+        Date trainingDate = trainingEvent.getTrainingDate();
+        LocalDate localDate = trainingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return YearMonth.from(localDate);
+    }
+
     @Override
-    public void create(TrainingEventDTO trainingEventDTO){
+    public void create(TrainingEventDTO trainingEventDTO) {
         log.debug("Creating event with DTO: {} ", trainingEventDTO);
         TrainingEvent trainingEvent = modelMapper.map(trainingEventDTO, TrainingEvent.class);
 
@@ -57,17 +69,5 @@ public class TrainingEventServiceImpl implements org.tolking.training_event_serv
         }
 
         return new ArrayList<>(summaryMap.values());
-    }
-
-    private static void addTrainingToMap(TrainingEvent trainingEvent, TrainerSummary summary, YearMonth yearMonth, Map<String, TrainerSummary> summaryMap, String username) {
-        summary.addTrainingDuration(yearMonth.getYear(), yearMonth.getMonthValue(), trainingEvent.getTrainingDuration());
-
-        summaryMap.put(username, summary);
-    }
-
-    private static YearMonth getYearMonth(TrainingEvent trainingEvent) {
-        Date trainingDate = trainingEvent.getTrainingDate();
-        LocalDate localDate = trainingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return YearMonth.from(localDate);
     }
 }

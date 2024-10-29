@@ -7,4 +7,5 @@ public record ApiError(
         String message,
         String status,
         LocalDateTime localDateTime
-){}
+) {
+}

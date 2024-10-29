@@ -35,15 +35,15 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/v3/api-docs/**",
+                        .requestMatchers("/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/training-type").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/trainee/register").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/trainer/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/training-type").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/trainee/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/trainer/register").permitAll()
                         .requestMatchers("/trainee/**").hasRole("TRAINEE")
                         .requestMatchers("/trainer/**").hasRole("TRAINER")
                         .anyRequest().authenticated()
@@ -61,7 +61,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

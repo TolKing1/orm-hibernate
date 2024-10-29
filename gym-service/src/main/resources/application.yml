@@ -44,7 +44,7 @@ management:
     web:
       exposure:
         include:
-          ["health", "prometheus"]
+          [ "health", "prometheus" ]
   endpoint:
     health:
       show-details: always
@@ -103,7 +103,7 @@ management:
     web:
       exposure:
         include:
-          ["health", "prometheus"]
+          [ "health", "prometheus" ]
   endpoint:
     health:
       show-details: always

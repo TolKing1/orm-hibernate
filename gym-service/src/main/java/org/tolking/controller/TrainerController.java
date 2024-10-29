@@ -103,8 +103,8 @@ public class TrainerController {
 
     })
     List<TrainingTrainerReadDTO> getTrainingList(@NotNull Principal principal,
-                                                 @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodFrom,
-                                                 @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date periodTo,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodFrom,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodTo,
                                                  @RequestParam(required = false) String traineeName) {
         return trainerService.getTrainingList(
                 principal.getName(),

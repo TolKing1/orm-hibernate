@@ -15,5 +15,5 @@ public class CustomMetricsConfig {
         return new TimedAspect(registry);
     }
 
-    
+
 }

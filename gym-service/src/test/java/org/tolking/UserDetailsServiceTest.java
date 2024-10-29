@@ -24,7 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserDetailsServiceTest {
@@ -49,7 +53,7 @@ public class UserDetailsServiceTest {
     private UserDetailsServiceImpl userDetailsService;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         username = "testuser";
         password = "password";
 
@@ -59,6 +63,7 @@ public class UserDetailsServiceTest {
 
         loginDTO = new LoginDTO(username, password);
     }
+
     @Test
     public void signIn_ValidCredentials_Success() throws BadLoginException, LoginAttemptExceedException, UserNotFoundException {
 

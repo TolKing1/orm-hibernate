@@ -41,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String username = loginDTO.getUsername();
         log.debug("Try to login with username: {}", username);
 
-        if (bruteForceProtectionService.isBlocked(username, LOCK_TIME)){
+        if (bruteForceProtectionService.isBlocked(username, LOCK_TIME)) {
             throw new LoginAttemptExceedException();
         }
 

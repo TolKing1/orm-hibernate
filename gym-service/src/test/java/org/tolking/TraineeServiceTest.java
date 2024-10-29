@@ -33,8 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TraineeServiceTest {
@@ -91,7 +97,7 @@ public class TraineeServiceTest {
     }
 
     @AfterEach
-    public void cleanUp(){
+    public void cleanUp() {
         Mockito.reset(traineeRepository, userService, trainingService, trainerService, createConverter, profileConverter, updateConverter);
     }
 
@@ -117,7 +123,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void getProfile_shouldReturnTraineeProfile_whenTraineeExists(){
+    public void getProfile_shouldReturnTraineeProfile_whenTraineeExists() {
 
         when(traineeRepository.getTraineeByUser_Username(traineeUsername))
                 .thenReturn(Optional.of(trainee));
@@ -140,7 +146,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void updatePassword_shouldUpdatePassword_whenTraineeExists(){
+    public void updatePassword_shouldUpdatePassword_whenTraineeExists() {
         String newPassword = "newPassword";
         String encoded = "asdljwoajdwoawjodlafgsdgsfdgfd";
 
@@ -168,7 +174,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void update_shouldUpdateTraineeProfile_whenTraineeExists(){
+    public void update_shouldUpdateTraineeProfile_whenTraineeExists() {
 
         Trainee updatedTrainee = new Trainee();
 
@@ -195,7 +201,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void toggleStatus_shouldToggleStatus_whenTraineeExists(){
+    public void toggleStatus_shouldToggleStatus_whenTraineeExists() {
         when(traineeRepository.getTraineeByUser_Username(traineeUsername))
                 .thenReturn(Optional.of(trainee));
 
@@ -218,7 +224,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void delete_shouldDeleteTrainee_whenTraineeExists(){
+    public void delete_shouldDeleteTrainee_whenTraineeExists() {
         when(traineeRepository.getTraineeByUser_Username(traineeUsername))
                 .thenReturn(Optional.of(trainee));
 
@@ -263,7 +269,7 @@ public class TraineeServiceTest {
     }
 
     @Test
-    public void getNotAssignedTrainers_shouldReturnListOfTrainers_whenTraineeExists(){
+    public void getNotAssignedTrainers_shouldReturnListOfTrainers_whenTraineeExists() {
         List<TrainerForTraineeProfileDTO> trainers = new ArrayList<>();
 
         when(traineeRepository.getTraineeByUser_Username(traineeUsername))

@@ -44,10 +44,10 @@ public interface TrainingService {
      * Creates a new training session for a Trainee.
      *
      * @param trainee the Trainee for whom the training session is to be created.
-     * @param dto the data transfer object containing the details of the training session to be created.
+     * @param dto     the data transfer object containing the details of the training session to be created.
+     * @return Created training
      * @throws TrainerNotFoundException if the Trainer specified in the DTO is not found.
      * @throws TraineeNotFoundException if the Trainee is not found.
-     * @return Created training
      */
     @Validated
     TrainingEventDTO createTraining(@NotNull Trainee trainee, @NotNull @Valid TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException;

@@ -18,7 +18,7 @@ public abstract class DTOConverter<E, D> {
         return modelMapper.map(entity, getTypeDTO());
     }
 
-    public E updateEntity(E entity, D dto){
+    public E updateEntity(E entity, D dto) {
         modelMapper.map(dto, entity);
 
         return entity;

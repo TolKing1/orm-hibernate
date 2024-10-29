@@ -12,17 +12,17 @@ import org.tolking.service.impl.UserServiceImpl;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+    private static final String BASE_USERNAME = "tolek.bek";
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
     private UserServiceImpl userService;
-
-    private static final String BASE_USERNAME = "tolek.bek";
 
     @Test
     void getNewUsername_ShouldReturnBaseUsernameWhenNoDuplicates() {

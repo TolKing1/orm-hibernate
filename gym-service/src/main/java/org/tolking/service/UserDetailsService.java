@@ -9,5 +9,6 @@ import org.tolking.exception.UserNotFoundException;
 public interface UserDetailsService extends org.springframework.security.core.userdetails.UserDetailsService {
     @Override
     UserDetails loadUserByUsername(String username) throws UserNotFoundException;
+
     String signIn(LoginDTO loginDTO) throws BadLoginException, LoginAttemptExceedException;
 }

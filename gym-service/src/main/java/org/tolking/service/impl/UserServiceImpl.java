@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public String getNewUsername(String baseUsername){
+    public String getNewUsername(String baseUsername) {
         log.debug("Finding duplicates for username: {}", baseUsername);
 
         int serialNumber = 1;

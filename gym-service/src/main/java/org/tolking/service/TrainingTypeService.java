@@ -32,6 +32,7 @@ public interface TrainingTypeService {
 
     /**
      * Gets a List of all TrainingType.
+     *
      * @return List of TrainingType
      */
     List<TrainingTypeDTO> getAll();

@@ -19,6 +19,10 @@ public class GlobalExceptionHandler {
     public static final HttpStatus UN_AUTH = HttpStatus.UNAUTHORIZED;
     public static final HttpStatus INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
 
+    private static void log(Throwable exception) {
+        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage(), exception);
+    }
+
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ApiError> handleInvalidDataException(InvalidDataException e, HttpServletRequest request) {
         return handleException(e, request, BAD_REQUEST);
@@ -95,10 +99,6 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiError, status);
-    }
-
-    private static void log(Throwable exception) {
-        log.error("{} occurred: {}", exception.getClass().getName(), exception.getMessage(), exception);
     }
 
 

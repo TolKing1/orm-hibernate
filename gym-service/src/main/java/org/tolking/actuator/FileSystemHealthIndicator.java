@@ -15,6 +15,29 @@ import java.nio.file.Paths;
 public class FileSystemHealthIndicator implements HealthIndicator {
     private static final long MIN_FREE_DISK_SPACE = 100 * 1024 * 1024; // 100 MB
 
+    private static Health getHealth(Path path) {
+        try {
+            long freeDiskSpace = Files.getFileStore(path).getUsableSpace();
+            String freeDiskSpaceStr = freeDiskSpace / 1024 / 1024 + " mb";
+
+            if (freeDiskSpace < MIN_FREE_DISK_SPACE) {
+                return Health.down()
+                        .withDetail("error", "Insufficient disk space (min: 100mb)")
+                        .withDetail("freeSpace", freeDiskSpaceStr)
+                        .build();
+            } else {
+                return Health.up()
+                        .withDetail("freeSpace", freeDiskSpaceStr)
+                        .withDetail("directory", path.toAbsolutePath().toString())
+                        .build();
+            }
+        } catch (Exception e) {
+            return Health.down()
+                    .withDetail("error", "Error checking disk space: " + e.getMessage())
+                    .build();
+        }
+    }
+
     @Override
     public Health health() {
         String localDir = System.getProperty("user.dir");
@@ -28,28 +51,5 @@ public class FileSystemHealthIndicator implements HealthIndicator {
         }
 
         return getHealth(path);
-    }
-
-    private static Health getHealth(Path path) {
-        try {
-            long freeDiskSpace = Files.getFileStore(path).getUsableSpace();
-            String freeDiskSpaceStr = freeDiskSpace / 1024 / 1024 + " mb";
-
-            if (freeDiskSpace < MIN_FREE_DISK_SPACE) {
-                return Health.down()
-                        .withDetail("error", "Insufficient disk space (min: 100mb)")
-                        .withDetail("freeSpace", freeDiskSpaceStr )
-                        .build();
-            }else {
-                return Health.up()
-                        .withDetail("freeSpace", freeDiskSpaceStr)
-                        .withDetail("directory", path.toAbsolutePath().toString())
-                        .build();
-            }
-        } catch (Exception e) {
-            return Health.down()
-                    .withDetail("error", "Error checking disk space: " + e.getMessage())
-                    .build();
-        }
     }
 }

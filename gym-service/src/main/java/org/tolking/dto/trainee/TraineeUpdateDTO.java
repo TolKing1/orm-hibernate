@@ -17,11 +17,11 @@ import java.util.Date;
 @Schema(description = "DTO for trainee update")
 public class TraineeUpdateDTO {
     @JsonProperty("firstName")
-    @Size(min = 3, max = 50 , message = "FirstName's length should be between 3 and 50")
+    @Size(min = 3, max = 50, message = "FirstName's length should be between 3 and 50")
     private String userFirstName;
 
     @JsonProperty("lastName")
-    @Size(min = 3, max = 50 , message = "LastName's length should be between 3 and 50")
+    @Size(min = 3, max = 50, message = "LastName's length should be between 3 and 50")
     private String userLastName;
 
     private Date dateOfBirth;

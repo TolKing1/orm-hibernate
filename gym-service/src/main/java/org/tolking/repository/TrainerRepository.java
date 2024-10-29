@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface TrainerRepository extends CrudRepository<Trainer, Long> {
     Optional<Trainer> getTrainerByUser_UsernameAndUser_Password(String username, String password);
+
     Optional<Trainer> getTrainerByUser_Username(String username);
 
     @Query("SELECT tr FROM Trainer tr " +

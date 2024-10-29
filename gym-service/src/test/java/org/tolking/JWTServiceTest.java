@@ -10,7 +10,9 @@ import org.tolking.entity.User;
 import org.tolking.enums.RoleType;
 import org.tolking.service.impl.JWTServiceImpl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class JWTServiceTest {

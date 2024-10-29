@@ -171,7 +171,7 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee trainee = this.getTraineeByUsername(username);
         List<Trainer> newTrainerList = trainerService.getTrainerListByUsernames(trainerNameDTOList);
 
-        if (newTrainerList.isEmpty()){
+        if (newTrainerList.isEmpty()) {
             throw new IllegalArgumentException("Trainer list can't be empty");
         }
 
