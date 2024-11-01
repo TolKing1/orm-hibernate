@@ -42,7 +42,7 @@ resilience4j:
         slidingWindowType: COUNT_BASED
 
 server:
-  port: 8081
+  port: 8082
 
 logging:
   level:

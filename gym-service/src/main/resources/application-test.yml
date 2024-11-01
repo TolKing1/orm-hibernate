@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: "test"
+  datasource:
+    url: jdbc:h2:mem:gym-club
+    username: test
+    password: test
+  jooq:
+    sql-dialect: org.hibernate.dialect.H2Dialect
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
