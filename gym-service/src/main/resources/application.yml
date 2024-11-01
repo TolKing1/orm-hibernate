@@ -1,6 +1,8 @@
 spring:
   application:
     name: gym-service
+  activemq:
+    event-queue-name: training-event-queue
 
 eureka:
   client:

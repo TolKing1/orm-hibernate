@@ -1,0 +1,27 @@
+package org.tolking.messaging;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+import org.tolking.external_dto.TrainingEventDTO;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class TrackerEventProducer {
+    private final JmsTemplate jmsTemplate;
+    @Value("${spring.activemq.event-queue-name}")
+    private String trackerEventQueue;
+
+    public void sendEvent(TrainingEventDTO dto) {
+        log.debug("Sending message from queue {} : {}", trackerEventQueue, dto);
+        try {
+            jmsTemplate.convertAndSend(trackerEventQueue, dto);
+        } catch (JmsException e) {
+            log.warn("Error sending message to queue {} : {}", trackerEventQueue, e.getMessage());
+        }
+    }
+}

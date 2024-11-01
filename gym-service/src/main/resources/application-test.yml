@@ -11,3 +11,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+  activemq:
+    broker-url: "tcp://localhost:1202"

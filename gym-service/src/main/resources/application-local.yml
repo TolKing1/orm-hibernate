@@ -11,3 +11,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+  activemq:
+    broker-url: "tcp://localhost:61616"
+logging:
+  level:
+    web: debug

@@ -6,8 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class GymApplication {
+public class TrainingEventServiceApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(GymApplication.class);
+        SpringApplication.run(TrainingEventServiceApplication.class, args);
     }
+
 }

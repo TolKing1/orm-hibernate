@@ -1,11 +1,9 @@
 package org.tolking.service.impl;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.tolking.controller.client.TrainingEventClient;
 import org.tolking.dto.converter.DTOConverter;
 import org.tolking.dto.criteria.CriteriaTraineeDTO;
 import org.tolking.dto.criteria.CriteriaTrainerDTO;
@@ -20,6 +18,7 @@ import org.tolking.exception.TraineeNotFoundException;
 import org.tolking.exception.TrainerNotFoundException;
 import org.tolking.exception.TrainingNotFoundException;
 import org.tolking.external_dto.TrainingEventDTO;
+import org.tolking.messaging.TrackerEventProducer;
 import org.tolking.repository.TrainingRepository;
 import org.tolking.service.TrainerService;
 import org.tolking.service.TrainingService;
@@ -33,7 +32,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
 
     private final TrainerService trainerService;
-    private final TrainingEventClient trainingEventClient;
+    private final TrackerEventProducer trackerEventProducer;
 
     private final DTOConverter<Training, TrainingTraineeReadDTO> readTraineeConverter;
     private final DTOConverter<Training, TrainingTrainerReadDTO> readTrainerConverter;
@@ -44,13 +43,13 @@ public class TrainingServiceImpl implements TrainingService {
                                DTOConverter<Training, TrainingTraineeReadDTO> readTraineeConverter,
                                DTOConverter<Training, TrainingTrainerReadDTO> readTrainerConverter,
                                ModelMapper modelMapper,
-                               TrainingEventClient trainingEventClient) {
+                               TrackerEventProducer trackerEventProducer) {
         this.trainingRepository = trainingRepository;
         this.trainerService = trainerService;
         this.readTraineeConverter = readTraineeConverter;
         this.readTrainerConverter = readTrainerConverter;
         this.modelMapper = modelMapper;
-        this.trainingEventClient = trainingEventClient;
+        this.trackerEventProducer = trackerEventProducer;
     }
 
     @Override
@@ -105,7 +104,7 @@ public class TrainingServiceImpl implements TrainingService {
         TrainingEventDTO trainingEventDTO = modelMapper.map(createdTraining, TrainingEventDTO.class);
 
         //Create event
-        createTrackerEvent(trainingEventDTO, ActionType.ADD);
+        sendTrackerEvent(trainingEventDTO, ActionType.ADD);
 
         return trainingEventDTO;
     }
@@ -127,18 +126,18 @@ public class TrainingServiceImpl implements TrainingService {
         TrainingEventDTO trainingEventDTO = modelMapper.map(updatedTraining, TrainingEventDTO.class);
 
         //Create event
-        createTrackerEvent(trainingEventDTO, ActionType.DELETE);
+        sendTrackerEvent(trainingEventDTO, ActionType.DELETE);
 
         return trainingEventDTO;
     }
 
-    private void createTrackerEvent(TrainingEventDTO createdTraining, ActionType actionType) {
+    private void sendTrackerEvent(TrainingEventDTO createdTraining, ActionType actionType) {
         try {
             createdTraining.setActionType(actionType);
 
-            trainingEventClient.createEvent(createdTraining);
-        } catch (FeignException.FeignClientException e) {
-            log.warn("Tracking service is not available");
+            trackerEventProducer.sendEvent(createdTraining);
+        } catch (Exception e) {
+            log.warn("Error occurred in messaging: {}", e.getMessage());
         }
     }
 }
