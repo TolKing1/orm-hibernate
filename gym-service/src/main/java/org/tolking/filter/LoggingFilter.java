@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 public class LoggingFilter implements Filter {
 
-    private static final String CORRELATION_ID = "X-Correlation-Id";
+    public static final String CORRELATION_ID = "X-Correlation-Id";
 
     private static String getIdOrGenerate(HttpServletRequest httpRequest) {
         String id = httpRequest.getHeader(CORRELATION_ID);

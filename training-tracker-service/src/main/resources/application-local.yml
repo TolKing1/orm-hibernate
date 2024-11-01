@@ -7,3 +7,7 @@ spring:
     user: admin
     password: admin
     event-queue-name: training-event-queue
+
+logging:
+  level:
+    root: debug
