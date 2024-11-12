@@ -29,7 +29,7 @@ public class TrackerEventProducer {
                 return message;
             });
         } catch (JmsException e) {
-            log.warn("Error sending message to queue {} : {}", trackerEventQueue, e.getMessage());
+            log.warn("Error sending message to queue {} : {}", trackerEventQueue, e.getMessage(), e);
         }
     }
 }

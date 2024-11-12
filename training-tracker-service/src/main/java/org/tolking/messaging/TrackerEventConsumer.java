@@ -22,8 +22,12 @@ public class TrackerEventConsumer {
     public void receiveMessage(TrainingEventDTO trainingEventDTO, @Header(CORRELATION_ID) String correlationId) {
         addTraceId(correlationId);
 
-        log.debug("Received message from queue {} : {}", QUEUE_NAME, trainingEventDTO);
-        trainingEventService.create(trainingEventDTO);
+        try {
+            log.debug("Received message from queue {}: {}", QUEUE_NAME, trainingEventDTO);
+            trainingEventService.create(trainingEventDTO);
+        } catch (Exception e) {
+            log.error("Error processing message from queue {}: {}", QUEUE_NAME, trainingEventDTO, e);
+        }
     }
 
     private static void addTraceId(String correlationId) {
