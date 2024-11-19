@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  activemq:
+    broker-url: tcp://aws-ec2-url:7034
+    user: admin
+    password: 123
+    event-queue-name: training-event-queue

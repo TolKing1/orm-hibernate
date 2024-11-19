@@ -1,22 +1,8 @@
 spring:
   application:
     name: gym-service
-  config:
-    activate:
-      on-profile: "local"
-  datasource:
-    url: jdbc:postgresql://${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  jooq:
-    sql-dialect: org.hibernate.dialect.PostgreSQLDialect
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-token:
-  signing:
-    key: ${JWT_SIGNATURE_KEY}
+  activemq:
+    event-queue-name: training-event-queue
 
 eureka:
   client:
@@ -24,6 +10,28 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
+
+token:
+  signing:
+    key: ${JWT_SIGNATURE_KEY}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  endpoint:
+    health:
+      show-details: always
 
 feign:
   client:
@@ -31,90 +39,3 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui/index.html
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include:
-          [ "health", "prometheus" ]
-  endpoint:
-    health:
-      show-details: always
-
-
-
----
-spring:
-  config:
-    activate:
-      on-profile: "test"
-  datasource:
-    url: jdbc:h2:mem:gym-club
-    username: test
-    password: test
-  jooq:
-    sql-dialect: org.hibernate.dialect.H2Dialect
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-
-token:
-  signing:
-    key: ${JWT_SIGNATURE_KEY}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true
----
-spring:
-  config:
-    activate:
-      on-profile: "dev"
-  datasource:
-    url: jdbc:mariadb://localhost:5432/gym
-    username: root
-    password: root
-  jooq:
-    sql-dialect: org.mariadb.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui/index.html
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include:
-          [ "health", "prometheus" ]
-  endpoint:
-    health:
-      show-details: always
-
-token:
-  signing:
-    key: ${JWT_SIGNATURE_KEY}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true

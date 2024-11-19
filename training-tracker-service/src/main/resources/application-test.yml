@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: "test"
+  activemq:
+    broker-url: tcp://localhost:1202
+    user: test
+    password: test
+    event-queue-name: training-event-queue
