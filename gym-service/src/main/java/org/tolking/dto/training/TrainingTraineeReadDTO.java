@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class TrainingTraineeReadDTO {
     private String trainingName;
     @JsonProperty("trainingType")
     private String trainingTypeName;
-    private Date date;
+    private LocalDate date;
     private Long duration;
 }
 
