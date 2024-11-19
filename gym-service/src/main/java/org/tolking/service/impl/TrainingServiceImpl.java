@@ -23,7 +23,7 @@ import org.tolking.repository.TrainingRepository;
 import org.tolking.service.TrainerService;
 import org.tolking.service.TrainingService;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -117,7 +117,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .orElseThrow(() -> new TrainingNotFoundException(id));
 
         training.setDeleted(true);
-        training.setDeleteDate(new Date());
+        training.setDeleteDate(LocalDate.now());
 
         Training updatedTraining = trainingRepository.save(training);
 

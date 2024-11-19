@@ -1,6 +1,6 @@
 package org.tolking.service;
 
-import org.tolking.model.TrainerSummary;
+import org.tolking.dto.TrainerSummaryDTO;
 import org.tolking.external_dto.TrainingEventDTO;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface TrainingEventService {
     /**
      * Retrieves a summary of all trainers.
      *
-     * @return a list of {@link TrainerSummary} objects representing the summary of all trainers.
+     * @return a list of {@link TrainerSummaryDTO} objects representing the summary of all trainers.
      */
-    List<TrainerSummary> getAllSummary();
+    List<TrainerSummaryDTO> getAllSummary();
 }

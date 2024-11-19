@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class TrainingDTO {
     private String trainingName;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "Date can't be null")
-    private Date date;
+    private LocalDate date;
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     @Positive(message = "Duration should be positive")
     private Long duration;

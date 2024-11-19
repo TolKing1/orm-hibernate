@@ -14,7 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -40,7 +40,7 @@ public class Training {
     private TrainingType trainingType;
 
     @Column(nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Column(nullable = false)
     @Positive
@@ -48,7 +48,7 @@ public class Training {
 
     private boolean isDeleted;
 
-    private Date deleteDate;
+    private LocalDate deleteDate;
 
 
 }
