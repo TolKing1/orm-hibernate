@@ -48,7 +48,7 @@ class TrainingEventServiceImplTest {
     @BeforeEach
     void setUp() {
         trainingEventDTO = new TrainingEventDTO();
-        trainingEventDTO.setUsername("trainer123");
+        trainingEventDTO.setTrainerUserUsername("trainer123");
         trainingEventDTO.setDuration(2);
         trainingEventDTO.setDate(LocalDate.of(2023, 10, 1));
         trainingEventDTO.setActionType(ActionType.ADD);
