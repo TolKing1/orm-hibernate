@@ -4,71 +4,63 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.tolking.model.TrainerSummary;
+import org.tolking.dto.TrainerSummaryDTO;
+import org.tolking.entity.TrainerSummary;
+import org.tolking.enums.ActionType;
 import org.tolking.external_dto.TrainingEventDTO;
+import org.tolking.mapper.TrainerSummaryConverter;
+import org.tolking.repository.TrainerSummaryRepository;
 import org.tolking.service.TrainingEventService;
-import org.tolking.entity.TrainingEvent;
-import org.tolking.repository.TrainerRepository;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TrainingEventServiceImpl implements TrainingEventService {
-    private final TrainerRepository trainerRepository;
+    private final TrainerSummaryRepository trainerSummaryRepository;
     private final ModelMapper modelMapper;
-
-    private static void addTrainingToMap(TrainingEvent trainingEvent, TrainerSummary summary, YearMonth yearMonth, Map<String, TrainerSummary> summaryMap, String username) {
-        summary.addTrainingDuration(yearMonth.getYear(), yearMonth.getMonthValue(), trainingEvent.getTrainingDuration());
-
-        summaryMap.put(username, summary);
-    }
-
-    private static YearMonth getYearMonth(TrainingEvent trainingEvent) {
-        Date trainingDate = trainingEvent.getTrainingDate();
-        LocalDate localDate = trainingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return YearMonth.from(localDate);
-    }
+    private final TrainerSummaryConverter trainerSummaryConverter;
 
     @Override
     public void create(TrainingEventDTO trainingEventDTO) {
         log.debug("Creating event with DTO: {} ", trainingEventDTO);
-        TrainingEvent trainingEvent = modelMapper.map(trainingEventDTO, TrainingEvent.class);
+        TrainerSummary trainerSummary = getTrainerSummary(trainingEventDTO);
+        TrainerSummary createdEvent = trainerSummaryRepository.save(trainerSummary);
+        log.debug("Event created successfully with ID: {}", createdEvent.getUsername());
+    }
 
-        TrainingEvent createdEvent = trainerRepository.save(trainingEvent);
-        log.debug("Event created successfully with ID: {}", createdEvent.getId());
+    private TrainerSummary getTrainerSummary(TrainingEventDTO trainingEventDTO) {
+        return trainerSummaryRepository.findByUsernameEquals(trainingEventDTO.getTrainerUserUsername())
+                .map(existingSummary -> updateDuration(trainingEventDTO, existingSummary))
+                .orElseGet(() -> trainerSummaryConverter.convertToEntity(trainingEventDTO));
+    }
+
+    private TrainerSummary updateDuration(TrainingEventDTO trainingEventDTO, TrainerSummary trainerSummary) {
+        int duration = trainingEventDTO.getDuration();
+        LocalDate date = trainingEventDTO.getDate();
+
+        trainerSummary.setIsActive(trainingEventDTO.getTrainerUserIsActive());
+
+        if (trainingEventDTO.getActionType().equals(ActionType.ADD)) {
+            trainerSummary.addTrainingDuration(date, duration);
+        } else {
+            trainerSummary.removeTrainingDuration(date, duration);
+        }
+        return trainerSummary;
     }
 
     @Override
-    public List<TrainerSummary> getAllSummary() {
+    public List<TrainerSummaryDTO> getAllSummary() {
         log.debug("Fetching summary of event");
 
-        List<TrainingEvent> trainingEvents = trainerRepository.findAllAddEventsWithoutDelete();
+        List<TrainerSummary> trainingSummaries = trainerSummaryRepository.getAllBy();
 
-        Map<String, TrainerSummary> summaryMap = new HashMap<>();
 
-        for (TrainingEvent trainingEvent : trainingEvents) {
-            String username = trainingEvent.getUsername();
-            TrainerSummary summary = summaryMap.getOrDefault(username, new TrainerSummary(
-                    trainingEvent.getUsername(),
-                    trainingEvent.getFirstName(),
-                    trainingEvent.getLastName(),
-                    trainingEvent.isActive()
-            ));
-
-            YearMonth yearMonth = getYearMonth(trainingEvent);
-
-            addTrainingToMap(trainingEvent, summary, yearMonth, summaryMap, username);
-        }
-
-        return new ArrayList<>(summaryMap.values());
+        return trainingSummaries.stream()
+                .map(
+                trainerSummary -> modelMapper.map(trainerSummary, TrainerSummaryDTO.class)
+                ).toList();
     }
 }

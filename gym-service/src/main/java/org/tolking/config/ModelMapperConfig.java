@@ -1,5 +1,6 @@
 package org.tolking.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.Condition;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -17,4 +18,6 @@ public class ModelMapperConfig {
 
         return modelMapper;
     }
+
+
 }

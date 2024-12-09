@@ -1,23 +1,13 @@
 spring:
   application:
     name: training-tracker-service
-
-  datasource:
-    url: jdbc:h2:mem:gym-club
-    username: test
-    password: test
-
-  jooq:
-    sql-dialect: org.hibernate.dialect.H2Dialect
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  h2:
-    console:
-      enabled: true
-
+  data:
+    mongodb:
+      database: summary
+      auto-index-creation: true
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
 springdoc:
   api-docs:
     enabled: true
