@@ -1,4 +1,4 @@
-package org.tolking;
+package org.tolking.unit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
