@@ -10,11 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.tolking.enums.TrainingsType;
 
 @Entity
 @Data
-@Table(name = "training_type")
+@Table(name = "TrainingType")
 @NoArgsConstructor
 public class TrainingType {
     @Id
@@ -22,6 +23,7 @@ public class TrainingType {
     private Integer id;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @ToStringExclude
     private TrainingsType name;
 
     public TrainingType(String name) {

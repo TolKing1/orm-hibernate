@@ -1,13 +1,6 @@
 spring:
   application:
     name: training-tracker-service
-  data:
-    mongodb:
-      database: summary
-      auto-index-creation: true
-      authentication-database: admin
-      username: rootuser
-      password: rootpass
 springdoc:
   api-docs:
     enabled: true

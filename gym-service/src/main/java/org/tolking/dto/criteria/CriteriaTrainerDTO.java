@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CriteriaTrainerDTO {
-    private Date from;
-    private Date to;
+    private LocalDate from;
+    private LocalDate to;
     private String traineeUsername;
 }

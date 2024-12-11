@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.time.LocalDate;
 
@@ -27,9 +29,11 @@ public class Training {
     private Long id;
 
     @ManyToOne
+    @ToStringExclude
     private Trainer trainer;
 
     @ManyToOne
+    @ToStringExclude
     private Trainee trainee;
 
     @Column(name = "training_name", nullable = false)
@@ -37,6 +41,7 @@ public class Training {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "training_type_id")
+    @Exclude
     private TrainingType trainingType;
 
     @Column(nullable = false)

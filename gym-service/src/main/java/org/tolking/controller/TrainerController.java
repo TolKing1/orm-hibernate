@@ -26,7 +26,7 @@ import org.tolking.dto.training.TrainingTrainerReadDTO;
 import org.tolking.service.TrainerService;
 
 import java.security.Principal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.tolking.util.ControllerUtils.PASSWORD_HAS_BEEN_CHANGED;
@@ -103,8 +103,8 @@ public class TrainerController {
 
     })
     List<TrainingTrainerReadDTO> getTrainingList(@NotNull Principal principal,
-                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodFrom,
-                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodTo,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate periodFrom,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate periodTo,
                                                  @RequestParam(required = false) String traineeName) {
         return trainerService.getTrainingList(
                 principal.getName(),

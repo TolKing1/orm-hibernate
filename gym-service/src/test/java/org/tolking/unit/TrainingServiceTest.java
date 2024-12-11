@@ -22,7 +22,7 @@ import org.tolking.repository.TrainingRepository;
 import org.tolking.service.TrainerService;
 import org.tolking.service.impl.TrainingServiceImpl;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -89,15 +89,15 @@ public class TrainingServiceTest {
         trainingDTO.setDuration(0L);
 
         criteriaTraineeDTO = new CriteriaTraineeDTO();
-        criteriaTraineeDTO.setFrom(new Date());
-        criteriaTraineeDTO.setTo(new Date());
+        criteriaTraineeDTO.setFrom(LocalDate.of(2021, 1, 1));
+        criteriaTraineeDTO.setTo(LocalDate.of(2025, 1, 1));
         criteriaTraineeDTO.setTrainerUsername(trainer.getUser().getUsername());
         criteriaTraineeDTO.setTrainingType(trainingType.getName());
 
 
         criteriaTrainerDTO = new CriteriaTrainerDTO();
-        criteriaTrainerDTO.setFrom(new Date());
-        criteriaTrainerDTO.setTo(new Date());
+        criteriaTrainerDTO.setFrom(LocalDate.of(2021, 1, 1));
+        criteriaTrainerDTO.setTo(LocalDate.of(2025, 1, 1));
         criteriaTrainerDTO.setTraineeUsername(trainee.getUser().getUsername());
     }
 

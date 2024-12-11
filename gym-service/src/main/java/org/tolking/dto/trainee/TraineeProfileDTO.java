@@ -1,5 +1,6 @@
 package org.tolking.dto.trainee;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class TraineeProfileDTO {
     private String userFirstName;
     @JsonProperty("lastName")
     private String userLastName;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
     private String address;
     private boolean userIsActive;

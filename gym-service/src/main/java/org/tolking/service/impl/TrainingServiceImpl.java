@@ -80,7 +80,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public TrainingEventDTO createTraining(Trainee trainee, TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException {
+    public TrainingEventDTO     createTraining(Trainee trainee, TrainingDTO dto) throws TrainerNotFoundException, TraineeNotFoundException {
         log.debug("Creating training with DTO: {} for trainee: {}", dto, trainee.getUser().getUsername());
 
         Trainer trainer = trainerService.getTrainerByUsername(dto.getTrainerUsername());
