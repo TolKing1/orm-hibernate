@@ -2,6 +2,14 @@ spring:
   config:
     activate:
       on-profile: "dev"
+  data:
+    mongodb:
+      database: summary
+      auto-index-creation: true
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      port: 27010
   activemq:
     broker-url: tcp://aws-ec2-url:7034
     user: admin

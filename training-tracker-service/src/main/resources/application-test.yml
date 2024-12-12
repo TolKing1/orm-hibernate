@@ -2,6 +2,14 @@ spring:
   config:
     activate:
       on-profile: "test"
+  data:
+    mongodb:
+      database: test-summary
+      auto-index-creation: true
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      port: 27020
   activemq:
     broker-url: tcp://localhost:1202
     user: test

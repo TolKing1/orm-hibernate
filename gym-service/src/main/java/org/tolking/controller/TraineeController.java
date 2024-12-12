@@ -29,7 +29,7 @@ import org.tolking.service.TraineeService;
 import org.tolking.service.TrainingService;
 
 import java.security.Principal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.tolking.util.ControllerUtils.ERROR_IN_VALIDATION;
@@ -116,8 +116,8 @@ public class TraineeController {
                     content = @Content(mediaType = CONTENT_TYPE, schema = @Schema(implementation = TrainingTraineeReadDTO.class))),
     })
     public List<TrainingTraineeReadDTO> getTrainingList(@NotNull Principal principal,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodFrom,
-                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date periodTo,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate periodFrom,
+                                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate periodTo,
                                                         @RequestParam(required = false) String trainerName,
                                                         @RequestParam(required = false) TrainingsType trainingType) {
         return traineeService.getTrainingList(

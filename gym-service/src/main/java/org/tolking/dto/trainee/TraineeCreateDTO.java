@@ -1,5 +1,6 @@
 package org.tolking.dto.trainee;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
@@ -26,6 +27,7 @@ public class TraineeCreateDTO {
     @Size(min = 3, max = 50, message = "LastName's length should be between 3 and 50")
     private String userLastName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
     private String address;
 }

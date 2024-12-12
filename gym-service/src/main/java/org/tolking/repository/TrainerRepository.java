@@ -3,13 +3,11 @@ package org.tolking.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import org.tolking.entity.Trainer;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface TrainerRepository extends CrudRepository<Trainer, Long> {
     Optional<Trainer> getTrainerByUser_UsernameAndUser_Password(String username, String password);
 

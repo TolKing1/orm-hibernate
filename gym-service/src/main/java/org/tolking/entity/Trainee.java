@@ -3,6 +3,7 @@ package org.tolking.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString.Exclude;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,9 +27,11 @@ public class Trainee {
     private User user;
 
     @OneToMany(mappedBy = "trainee", cascade = {CascadeType.REMOVE, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @Exclude
     private List<Training> trainingList = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "traineeList", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "traineeList", fetch = FetchType.EAGER)
+    @Exclude
     private List<Trainer> trainerList = new ArrayList<>();
 
     @PreUpdate

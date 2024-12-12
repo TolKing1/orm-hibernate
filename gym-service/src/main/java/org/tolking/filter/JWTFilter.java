@@ -43,7 +43,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // Get username from token
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
+        String username = "";
+        try {
+            username = jwtService.extractUserName(jwt);
+        } catch (Exception e) {
+            logger.error("Error occurred while extracting username from token", e);
+        }
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService

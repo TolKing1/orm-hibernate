@@ -3,15 +3,13 @@ package org.tolking.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import org.tolking.entity.Training;
 import org.tolking.enums.TrainingsType;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface TrainingRepository extends CrudRepository<Training, Long> {
     /**
      * Finds a list of training sessions based on the specified criteria and training that is not deleted.
@@ -30,8 +28,8 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
             "AND ( CAST(CAST(:periodTo as string ) as timestamp) IS NULL OR t.date <= :periodTo ) " +
             "AND ( :traineeName IS NULL OR t.trainee.user.username = :traineeName)")
     List<Training> findTrainerTrainingsByCriteria(@Param("username") String username,
-                                                  @Param("periodFrom") Date periodFrom,
-                                                  @Param("periodTo") Date periodTo,
+                                                  @Param("periodFrom") LocalDate periodFrom,
+                                                  @Param("periodTo") LocalDate periodTo,
                                                   @Param("traineeName") String traineeName);
 
 
@@ -53,8 +51,8 @@ public interface TrainingRepository extends CrudRepository<Training, Long> {
             "AND (:trainerName IS NULL OR t.trainer.user.username = :trainerName)" +
             "AND (:trainingsType IS NULL OR t.trainingType.name = :trainingsType)")
     List<Training> findTraineeTrainingsByCriteria(@Param("username") String username,
-                                                  @Param("periodFrom") Date periodFrom,
-                                                  @Param("periodTo") Date periodTo,
+                                                  @Param("periodFrom") LocalDate periodFrom,
+                                                  @Param("periodTo") LocalDate periodTo,
                                                   @Param("trainerName") String trainerName,
                                                   @Param("trainingsType") TrainingsType trainingsType);
 

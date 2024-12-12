@@ -8,7 +8,6 @@ import org.tolking.enums.TrainingsType;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface TrainingTypeRepository extends CrudRepository<TrainingType, Integer> {
     Optional<TrainingType> getTrainingTypeByName(TrainingsType name);
 
